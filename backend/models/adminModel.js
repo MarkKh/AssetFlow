@@ -32,18 +32,18 @@ module.exports = {
   },
 
   updateAdmin: (id, admin) => {
-    const { admin_name, admin_user, admin_pass } = admin;
+    const { admin_name } = admin;
     return pool
       .promise()
       .query(
-        "UPDATE admins SET admin_name = ?, admin_user = ?, admin_pass = ? WHERE admin_id = ?",
-        [admin_name, admin_user, admin_pass, id]
+        "UPDATE admins SET admin_name = ? WHERE admin_id = ?",
+        [admin_name, id]
       )
       .then(() => {
-        return { id, ...admin };
+        return { id, admin_name };
       })
       .catch((err) => console.log(err));
-  },
+},
 
   deleteAdmin: (id) => {
     return pool

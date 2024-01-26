@@ -1,4 +1,5 @@
 const admin = require("../models/adminModel");
+const bcrypt = require("bcryptjs");
 
 module.exports = {
   getAllAdmins: (req, res) => {
@@ -31,21 +32,41 @@ module.exports = {
   },
 
   createAdmin: (req, res) => {
-    const newAdmin = req.body;
-    admin
-      .createAdmin(newAdmin)
-      .then((result) => {
-        res.status(201).send(result);
-      })
-      .catch((err) => {
+    const { admin_name, admin_user, admin_pass } = req.body;
+
+    bcrypt.hash(admin_pass, 10, (err, hash) => {
+      if (err) {
         console.log(err);
-        res.status(500).send("Internal Server Error");
-      });
+        return res.status(500).json({ message: "Internal Server Error" });
+      }
+
+      const newAdmin = {
+        admin_name: admin_name,
+        admin_user: admin_user,
+        admin_pass: hash,
+      };
+
+      admin
+        .createAdmin(newAdmin)
+        .then((result) => {
+          res.status(201).send(result);
+        })
+        .catch((err) => {
+          console.log(err);
+          res.status(500).send("Internal Server Error");
+        });
+    });
   },
 
   updateAdmin: (req, res) => {
     const adminId = req.params.id;
-    const updatedAdmin = req.body;
+    const { admin_name } = req.body; // เฉพาะชื่อผู้ดูแลระบบที่จะถูกอัพเดต
+
+    // สร้างอ็อบเจ็กต์เพื่อเก็บข้อมูลที่จะถูกอัพเดต
+    const updatedAdmin = {
+        admin_name: admin_name
+    };
+
     admin
       .updateAdmin(adminId, updatedAdmin)
       .then((result) => {
@@ -55,7 +76,8 @@ module.exports = {
         console.log(err);
         res.status(500).send("Internal Server Error");
       });
-  },
+},
+
 
   deleteAdmin: (req, res) => {
     const adminId = req.params.id;

@@ -5,7 +5,21 @@ const itemsModel = {
     return pool
       .promise()
       .query(
-        "SELECT items.item_id, items.item_name, items.item_cat, item_category.item_cat_name, items.item_unit, units.unit_name, items.item_total, items.item_remain FROM items JOIN item_category ON items.item_cat = item_category.item_cat_id JOIN units ON items.item_unit = units.unit_id"
+        `SELECT 
+            items.item_id, 
+            items.item_name, 
+            items.item_cat, 
+            item_category.item_cat_name, 
+            items.item_unit, 
+            units.unit_name, 
+            items.item_total, 
+            items.item_remain 
+        FROM 
+            items 
+        JOIN 
+            item_category ON items.item_cat = item_category.item_cat_id 
+        JOIN 
+            units ON items.item_unit = units.unit_id`
       )
       .then(([rows]) => rows)
       .catch((error) => {
@@ -18,7 +32,23 @@ const itemsModel = {
     return pool
       .promise()
       .query(
-        "SELECT items.item_id, items.item_name, items.item_cat, item_category.item_cat_name, items.item_unit, units.unit_name, items.item_total, items.item_remain FROM items JOIN item_category ON items.item_cat = item_category.item_cat_id JOIN units ON items.item_unit = units.unit_id WHERE items.item_id = ?",
+        `SELECT 
+            items.item_id, 
+            items.item_name, 
+            items.item_cat, 
+            item_category.item_cat_name, 
+            items.item_unit, 
+            units.unit_name, 
+            items.item_total, 
+            items.item_remain 
+        FROM 
+            items 
+        JOIN 
+            item_category ON items.item_cat = item_category.item_cat_id 
+        JOIN 
+            units ON items.item_unit = units.unit_id 
+        WHERE 
+            items.item_id = ?`,
         [itemId]
       )
       .then(([rows]) => rows[0])

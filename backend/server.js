@@ -15,6 +15,7 @@ const itemCategoryRouter = require("./routes/itemCategoryRoutes")
 const unitRouter = require("./routes/unitRoutes")
 const statusRouter = require("./routes/statusRoutes")
 const transectionCategoryRouter = require("./routes/transectionCategoryRoutes")
+const itemRouter = require("./routes/itemsRoutes")
 // const authenticationRouter = require("./routes/authenticationRoutes");
 
 // Routes
@@ -24,6 +25,7 @@ app.use(itemCategoryRouter);
 app.use(unitRouter);
 app.use(statusRouter)
 app.use(transectionCategoryRouter);
+app.use(itemRouter);
 // app.use(authenticationRouter);
 
 const port = process.env.PORT;

@@ -44,7 +44,7 @@ const sidebarItem: menu[] = [
   {
     title: 'Manage data',
     icon: DashboardIcon,
-    // to: '/dashboard/default'
+    to: '/data-manage'
   },
   {
     title: 'Transactions',

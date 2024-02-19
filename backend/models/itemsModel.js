@@ -19,7 +19,9 @@ const itemsModel = {
         JOIN 
             item_category ON items.item_cat = item_category.item_cat_id 
         JOIN 
-            units ON items.item_unit = units.unit_id`
+            units ON items.item_unit = units.unit_id
+        ORDER BY
+            items.item_id`
       )
       .then(([rows]) => rows)
       .catch((error) => {

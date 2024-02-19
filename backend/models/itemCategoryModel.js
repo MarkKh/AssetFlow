@@ -1,14 +1,26 @@
 const { pool } = require('../db/db-config');
 
 const itemCategoryModel = {
-  getAllItemCategories: () => {
-    return pool.promise().query('SELECT * FROM item_category')
-      .then(([rows]) => rows)
-      .catch(error => {
-        console.error('Error getting item categories:', error);
-        throw error;
+  getAllItemCategories: async () => {
+    try {
+      const categoryData = await pool.promise().query('SELECT * FROM item_category');
+      
+      const resultPromises = categoryData[0].map(async (category) => {
+        const queryResult = await pool.promise().query(`SELECT COUNT(*) AS count FROM items WHERE item_cat = '${category.item_cat_id}'`);
+        const rowCount = queryResult[0][0].count;
+        return { ...category, isReferenced: rowCount > 0 };
       });
+  
+      const categorizedItems = await Promise.all(resultPromises);
+      return categorizedItems;
+    } catch (error) {
+      console.error('Error getting item categories:', error);
+      throw error;
+    }
   },
+  
+  
+  
 
   getItemCategoryById: (categoryId) => {
     return pool.promise().query('SELECT * FROM item_category WHERE item_cat_id = ?', [categoryId])

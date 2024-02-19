@@ -28,7 +28,8 @@ const sidebarMenu = shallowRef(sidebarItems);
     <!---Logo part -->
 
     <div class="pa-5">
-      <Logo />
+      <!-- <Logo /> -->
+      <h2>AssetFlow v1.0.0</h2>
     </div>
     <!-- ---------------------------------------------- -->
     <!---Navigation -->

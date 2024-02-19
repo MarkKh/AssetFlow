@@ -51,6 +51,11 @@ const MainRoutes = {
       path: '/inventory',
       component: () => import('@/views/inventory/inventory.vue')
     },
+    {
+      name: 'DataManage',
+      path: '/data-manage',
+      component: () => import('@/views/dataManage/dataManage.vue')
+    },
   ]
 };
 

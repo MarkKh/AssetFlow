@@ -17,6 +17,7 @@ v-container
             <table>
               <thead>
                 <tr>
+                  <th>#</th>
                   <th v-for="(header, index) in headers" :key="index" class="header-cell">
                     <span>{{ header.label }}</span>
                   </th>
@@ -26,6 +27,7 @@ v-container
               <tbody>
                 <!-- Display data based on the current page -->
                 <tr v-for="(item, index) in paginatedData" :key="index">
+                  <td>{{ currentIndex + index + 1 }}</td>
                   <td v-for="(header, index) in headers" :key="index">
                     <template v-if="header.field === 'status'">
                       <div v-if="item.status == false">
@@ -64,7 +66,13 @@ v-container
 
                       <v-tooltip location="top">
                         <template v-slot:activator="{ props }">
-                          <v-btn icon v-bind="props" size="small" :disabled="item.item_total != item.item_remain">
+                          <v-btn
+                            icon
+                            v-bind="props"
+                            size="small"
+                            :disabled="item.item_total != item.item_remain"
+                            @click="deleteItem(item.item_id, item.item_name)"
+                          >
                             <v-icon color="grey-lighten-1"> mdi-trash-can-outline </v-icon>
                           </v-btn>
                         </template>
@@ -91,8 +99,9 @@ v-container
 import { ref, reactive, computed, watchEffect, defineEmits } from 'vue';
 import BaseBreadcrumb from '@/components/shared/BaseBreadcrumb.vue';
 import UiParentCard from '@/components/shared/UiParentCard.vue';
-import { getAllInventory } from '@/service/inventory';
+import { getAllInventory, deleteInventory } from '@/service/inventory';
 import ModalAddInventory from './_modalAddInventory.vue';
+import Swal from 'sweetalert2';
 
 const modalAddInventory = ref(false);
 
@@ -109,7 +118,7 @@ interface IData {
   unit_name: string;
   item_total: number;
   item_remain: number;
-  status: boolean; // เพิ่ม field สำหรับสถานะ
+  status: boolean;
 }
 
 const dataGridInventory = reactive({
@@ -147,8 +156,6 @@ const checkClick = (id: number) => {
 
 dataInventory();
 
-let sortedData = ref<IData[]>([]);
-let sortOrders = ref({});
 const currentPage = ref(1);
 const perPage = ref(10);
 const searchQuery = ref('');
@@ -169,18 +176,54 @@ const totalPages = computed(() => {
   return Math.ceil(filteredData.value.length / perPage.value);
 });
 
-const isNextDisabled = computed(() => {
-  return currentPage.value === Math.ceil(filteredData.value.length / perPage.value);
+const currentIndex = computed(() => {
+  return (currentPage.value - 1) * perPage.value;
 });
+
 
 const editItem = (id: number) => {
   alert('Success');
+};
+
+const deleteItem = async (id: number,name: string) => {
+  const item_id = id;
+  try {
+    const confirmResult = await Swal.fire({
+      title: 'Are you sure to delete?',
+      text: `${name}`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!'
+    });
+    if (confirmResult.isConfirmed) {
+      await deleteInventory(id);
+      Swal.fire({
+        title: 'Deleted!',
+        text: 'Your item has been deleted.',
+        icon: 'success',
+        timer: 1500,
+        showConfirmButton: false
+      }).then(() => {
+        dataInventory();
+      });
+    }
+  } catch (error) {
+    console.error('Error while deleting item:', error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: 'Something went wrong while deleting the item.'
+    });
+  }
 };
 
 watchEffect(() => {
   currentPage.value = 1;
 });
 </script>
+
 <style scoped>
 .table-container {
   overflow-x: auto;

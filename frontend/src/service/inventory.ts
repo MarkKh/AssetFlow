@@ -19,3 +19,13 @@ export const createInventory = async (data: any) => {
         throw error;
     }
 }
+
+export const deleteInventory = async (itemId: number) => {
+    try {
+        const res = await axios.delete(`http://localhost:7031/api/item/${itemId}`);
+        return res.data;
+    } catch (error) {
+        console.error("Error while deleting inventory:", error);
+        throw error;
+    }
+}

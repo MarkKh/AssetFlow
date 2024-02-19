@@ -23,6 +23,7 @@
     "lodash": "^4.17.21",
     "pinia": "2.1.6",
     "remixicon": "3.5.0",
+    "sweetalert2": "^11.10.5",
     "vee-validate": "4.11.3",
     "vite-plugin-vuetify": "1.0.2",
     "vue": "3.3.4",

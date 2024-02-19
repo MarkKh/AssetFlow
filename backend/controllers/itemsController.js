@@ -5,11 +5,16 @@ const itemsController = {
     itemsModel
       .getAllItems()
       .then((items) => {
-        const totalCount = items.length;
-        res.status(200).json({ data: items, totalCount: totalCount });
+        const updatedItems = items.map(item => ({
+          ...item,
+          status: item.item_remain === 0 ? false : true
+        }));
+        const totalCount = updatedItems.length;
+        res.status(200).json({ data: updatedItems, totalCount: totalCount });
       })
       .catch((error) => res.status(500).send("Internal Server Error"));
   },
+  
 
   getItemById: (req, res) => {
     const itemId = req.params.id;

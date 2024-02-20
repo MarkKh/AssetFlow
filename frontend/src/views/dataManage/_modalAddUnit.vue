@@ -1,26 +1,26 @@
 <template>
   <v-dialog v-model="dialog" persistent width="600">
     <template v-slot:activator="{ props }">
-      <v-btn icon size="small" v-bind="props">
-        <v-icon>mdi-pencil</v-icon>
+      <v-btn icon density="compact" v-bind="props">
+        <v-icon>mdi-plus</v-icon>
       </v-btn>
     </template>
     <v-card>
       <v-card-title>
-        <span class="h3"><v-icon size="small" color="primary">mdi-pencil</v-icon> Edit Item Category</span>
+        <span class="h3"><v-icon size="small" color="primary">mdi-plus</v-icon> Add New unit</span>
       </v-card-title>
       <v-card-text>
         <v-container>
           <v-row>
             <v-col cols="12">
               <v-text-field
-              autofocus
-                v-model="ICName"
+                autofocus
+                v-model="formData.unitName"
                 :counter="50"
-                label="Item category name*"
+                label="Unit name*"
                 hint="Enter up to 50 characters"
                 :rules="[(v) => (!!v && v.length <= 50) || 'Please enter data']"
-                :error-messages="ICName.length > 50 ? ['****Maximum 50 characters****'] : []"
+                :error-messages="formData.unitName.length > 50 ? ['****Maximum 50 characters****'] : []"
                 required
               ></v-text-field>
             </v-col>
@@ -33,6 +33,7 @@
         <v-btn color="blue darken-1" variant="text" @click="saveItem">Save</v-btn>
       </v-card-actions>
     </v-card>
+
     <v-dialog v-model="validationDialog" max-width="300">
       <v-card>
         <v-card-text><span style="color: red">Please fill in all required fields.</span></v-card-text>
@@ -46,58 +47,53 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineProps, defineEmits, onMounted, watch } from 'vue';
+import { ref, reactive, defineEmits } from 'vue';
 import Swal from 'sweetalert2';
-import { updateItemCategory } from '@/service/dataManage';
+import { createUnit } from '@/service/dataManage';
 
-interface Props {
-  item_cat_id: number;
-  item_cat_name: string;
-}
-
-const props = defineProps<Props>();
-
-const emit = defineEmits(['updateIC']);
+const emit = defineEmits(['addUnit']);
 const validationDialog = ref(false);
 const dialog = ref(false);
-const ICName = ref(props.item_cat_name);
-// ICName.value = props.item_cat_name;
+
+interface FormData {
+  unitName: string;
+}
+
+const formData: FormData = reactive({
+  unitName: ''
+});
 
 const saveItem = async () => {
-  if (!ICName.value) {
+  if (!formData.unitName) {
     validationDialog.value = true;
     return;
   }
 
   try {
-    const data = { item_cat_name: ICName.value };
-    const res = await updateItemCategory(props.item_cat_id, data);
-    console.log('Item category updated successfully:', res);
+    const data = { unit_name: formData.unitName };
+    const res = await createUnit(data);
+    console.log('Unit created successfully:', res);
     clearFormData();
     Swal.fire({
       icon: 'success',
-      title: 'Your item category has been updated',
+      title: 'Your unit has been saved',
       showConfirmButton: false,
       timer: 2000
     });
     dialog.value = false;
-    emit('updateIC', res);
+    emit('addUnit', res);
   } catch (error) {
-    console.error('Error while updating item category:', error);
+    console.error('Error while creating unit:', error);
     Swal.fire({
       icon: 'error',
       title: 'Error',
-      text: 'An error occurred while updating the item category. Please try again later.',
+      text: 'An error occurred while creating the unit. Please try again later.',
       confirmButtonText: 'OK'
     });
   }
 };
 
 const clearFormData = () => {
-  ICName.value = '';
+  formData.unitName = '';
 };
-
-watch(props, () => {
-  ICName.value = props.item_cat_name;
-});
 </script>

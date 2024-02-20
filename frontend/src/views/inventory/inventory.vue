@@ -32,11 +32,11 @@ v-container
                     <template v-if="header.field === 'status'">
                       <div v-if="item.status == false">
                         <!-- <v-badge color="error" content="Not in stock" inline></v-badge> -->
-                        <v-chip size="small" text="Out of stock" color="error" variant="tonal" class="mr-2" />
+                        <v-chip size="small" text="หมด" color="error" variant="tonal" class="mr-2" />
                       </div>
                       <div v-else>
                         <!-- <v-badge color="success" content="In stock" inline></v-badge> -->
-                        <v-chip size="small" text="In stock" color="success" variant="tonal" class="mr-2" />
+                        <v-chip size="small" text="คงเหลือ" color="success" variant="tonal" class="mr-2" />
                       </div>
                     </template>
                     <template v-else>

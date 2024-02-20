@@ -16,8 +16,13 @@
             <table>
               <thead>
                 <tr>
-                  <th>#</th>
-                  <th v-for="(header, index) in itemCategoryHeaders" :key="index" class="header-cell">
+                  <th style="width: 10%">#</th>
+                  <th
+                    v-for="(header, index) in itemCategoryHeaders"
+                    :key="index"
+                    class="header-cell"
+                    :style="{ width: header.width + '%' }"
+                  >
                     <span>{{ header.label }}</span>
                   </th>
                 </tr>
@@ -28,20 +33,98 @@
                   <td v-for="(header, index) in itemCategoryHeaders" :key="index">
                     <template v-if="header.field == 'isReferenced'">
                       <div v-if="item.isReferenced">
-                        <v-chip size="small" text="Active" color="success" variant="tonal" class="mr-2" />
+                        <v-chip size="small" text="กำลังใช้งาน" color="success" variant="tonal" class="mr-2" />
                       </div>
                       <div v-else>
-                        <v-chip size="small" text="InActive" color="warning" variant="tonal" class="mr-2" />
+                        <v-chip size="small" text="รอใช้งาน" color="warning" variant="tonal" class="mr-2" />
                       </div>
                     </template>
-                    <template v-else-if="header.field == 'Action'"> 
+
+                    <template v-else-if="header.field == 'Action'">
                       <v-tooltip location="top">
+                        <template v-slot:activator="{ props }">
+                          <ModalUpdateIC
+                            @click="updateIC"
+                            @updateIC="handleUpdateIC"
+                            :item_cat_id="item.item_cat_id"
+                            :item_cat_name="item.item_cat_name"
+                          />
+                        </template>
+                      </v-tooltip>
+                      <v-tooltip location="top">
+                        <template v-slot:activator="{ props }">
+                          <v-btn
+                            icon
+                            v-bind="props"
+                            size="small"
+                            :disabled="item.isReferenced"
+                            @click="deleteIC(item.item_cat_id, item.item_cat_name)"
+                          >
+                            <v-icon color="grey-lighten-1"> mdi-trash-can-outline </v-icon>
+                          </v-btn>
+                        </template>
+                        <span>Delete</span>
+                      </v-tooltip>
+                    </template>
+                    <template v-else>
+                      {{ item[header.field] }}
+                    </template>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <v-container class="max-width">
+            <v-row justify="end">
+              <v-pagination :length="ICtotalPages" :total-visible="3" v-model="ICcurrentPage" :size="20"></v-pagination>
+            </v-row>
+          </v-container>
+        </UiParentCard>
+
+        <UiParentCard class="mt-6">
+          <div class="flex mb-4">
+            <h2 class="flex-grow">Unit Management</h2>
+            <div class="search-container">
+              <input type="text" v-model="UNsearchQuery" placeholder="Search..." class="search-input" />
+              <i class="mdi mdi-magnify search-icon"></i>
+            </div>
+            <ModalAddUnit @click="addUnit" @addUnit="handleAddUnit" />
+          </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 10%">#</th>
+                  <th v-for="(header, index) in unitHeaders" :key="index" class="header-cell" :style="{ width: header.width + '%' }">
+                    <span>{{ header.label }}</span>
+                  </th>
+                  <th style="width: 20%">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(item, index) in UNpaginatedData" :key="index">
+                  <td>{{ UNcurrentIndex + index + 1 }}</td>
+                  <td v-for="(header, index) in unitHeaders" :key="index">
+                    <template v-if="header.field == 'isReferenced'">
+                      <div v-if="item.isReferenced">
+                        <v-chip size="small" text="กำลังใช้งาน" color="success" variant="tonal" class="mr-2" />
+                      </div>
+                      <div v-else>
+                        <v-chip size="small" text="รอใช้งาน" color="warning" variant="tonal" class="mr-2" />
+                      </div>
+                    </template>
+                    <template v-else>
+                      {{ item[header.field] }}
+                    </template>
+                  </td>
+                  <td>
+                    <v-tooltip location="top">
                       <template v-slot:activator="{ props }">
-                        <ModalUpdateIC
-                          @click="updateIC"
-                          @updateIC="handleUpdateIC"
-                          :item_cat_id="item.item_cat_id"
-                          :item_cat_name="item.item_cat_name"
+                        <ModalUpdateUnit
+                          @click="updateUnit"
+                          @updateUnit="handleUpdateUnit"
+                          :unit_id="item.unit_id"
+                          :unit_name="item.unit_name"
                         />
                       </template> </v-tooltip
                     >&nbsp
@@ -53,70 +136,8 @@
                           v-bind="props"
                           size="small"
                           :disabled="item.isReferenced"
-                          @click="deleteIC(item.item_cat_id, item.item_cat_name)"
+                          @click="delete_Unit(item.unit_id, item.unit_name)"
                         >
-                          <v-icon color="grey-lighten-1"> mdi-trash-can-outline </v-icon>
-                        </v-btn>
-                      </template>
-                      <span>Delete</span>
-                    </v-tooltip>
-                    </template>
-                    <template v-else>
-                      {{ item[header.field] }}
-                    </template>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <v-container class="max-width"
-            ><v-row justify="end">
-              <v-pagination :length="ICtotalPages" :total-visible="3" v-model="ICcurrentPage" :size="20"></v-pagination> </v-row
-          ></v-container>
-        </UiParentCard>
-
-        <UiParentCard class="mt-6">
-          <div class="flex mb-4">
-            <h2 class="flex-grow">Unit Management</h2>
-            <div class="search-container">
-              <input type="text" v-model="UNsearchQuery" placeholder="Search..." class="search-input" />
-              <i class="mdi mdi-magnify search-icon"></i>
-            </div>
-            <!-- <ModalAddIC @click="addIC" @addIC="handleAddIC" /> -->
-          </div>
-          <div class="table-container">
-            <table>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th v-for="(header, index) in unitHeaders" :key="index" class="header-cell">
-                    <span>{{ header.label }}</span>
-                  </th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(item, index) in UNpaginatedData" :key="index">
-                  <td>{{ UNcurrentIndex + index + 1 }}</td>
-                  <td v-for="(header, index) in unitHeaders" :key="index">
-                    <template v-if="header.field == 'isReferenced'">
-                      <div v-if="item.isReferenced">
-                        <v-chip size="small" text="Active" color="success" variant="tonal" class="mr-2" />
-                      </div>
-                      <div v-else>
-                        <v-chip size="small" text="InActive" color="warning" variant="tonal" class="mr-2" />
-                      </div>
-                    </template>
-                    <template v-else>
-                      {{ item[header.field] }}
-                    </template>
-                  </td>
-                  <td>
-                    <v-tooltip location="top"> <template v-slot:activator="{ props }"> </template> </v-tooltip>&nbsp
-
-                    <v-tooltip location="top">
-                      <template v-slot:activator="{ props }">
-                        <v-btn icon v-bind="props" size="small" :disabled="item.isReferenced">
                           <v-icon color="grey-lighten-1"> mdi-trash-can-outline </v-icon>
                         </v-btn>
                       </template>
@@ -136,7 +157,74 @@
         <UiParentCard class="mt-6">
           <div class="flex mb-4">
             <h2 class="flex-grow">Transaction Category Management</h2>
+            <div class="search-container">
+              <input type="text" v-model="TCsearchQuery" placeholder="Search..." class="search-input" />
+              <i class="mdi mdi-magnify search-icon"></i>
+            </div>
+            <ModalAddTransactionCategory @click="addTC" @addTC="handleAddTC" />
           </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 10%">#</th>
+                  <th v-for="(header, index) in TCHeaders" :key="index" class="header-cell" :style="{ width: header.width + '%' }">
+                    <span>{{ header.label }}</span>
+                  </th>
+                  <th style="width: 20%">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(item, index) in TCpaginatedData" :key="index">
+                  <td>{{ TCcurrentIndex + index + 1 }}</td>
+                  <td v-for="(header, index) in TCHeaders" :key="index">
+                    <template v-if="header.field == 'isReferenced'">
+                      <div v-if="item.isReferenced">
+                        <v-chip size="small" text="กำลังใช้งาน" color="success" variant="tonal" class="mr-2" />
+                      </div>
+                      <div v-else>
+                        <v-chip size="small" text="รอใช้งาน" color="warning" variant="tonal" class="mr-2" />
+                      </div>
+                    </template>
+                    <template v-else>
+                      {{ item[header.field] }}
+                    </template>
+                  </td>
+                  <td>
+                    <v-tooltip location="top">
+                      <template v-slot:activator="{ props }">
+                        <ModalUpdateTC
+                          @click="updateTC"
+                          @updateTC="handleUpdateTC"
+                          :trans_cat_id="item.trans_cat_id"
+                          :trans_cat_name="item.trans_cat_name"
+                        />
+                      </template> </v-tooltip
+                    >&nbsp
+
+                    <v-tooltip location="top">
+                      <template v-slot:activator="{ props }">
+                        <v-btn
+                          icon
+                          v-bind="props"
+                          size="small"
+                          :disabled="item.isReferenced"
+                          @click="deleteTC(item.trans_cat_id, item.trans_cat_name)"
+                        >
+                          <v-icon color="grey-lighten-1"> mdi-trash-can-outline </v-icon>
+                        </v-btn>
+                      </template>
+                      <span>Delete</span>
+                    </v-tooltip>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <v-container class="max-width"
+            ><v-row justify="end">
+              <v-pagination :length="TCtotalPages" :total-visible="3" v-model="TCcurrentPage" :size="20"></v-pagination> </v-row
+          ></v-container>
         </UiParentCard>
       </v-col>
     </v-row>
@@ -148,10 +236,20 @@ import Swal from 'sweetalert2';
 import { ref, reactive, computed, defineEmits, onMounted } from 'vue';
 import BaseBreadcrumb from '@/components/shared/BaseBreadcrumb.vue';
 import UiParentCard from '@/components/shared/UiParentCard.vue';
-import { getAllItemCategory, deleteItemCategory, getAllUnit } from '@/service/dataManage';
+import {
+  getAllItemCategory,
+  deleteItemCategory,
+  getAllUnit,
+  deleteUnit,
+  getAllTransactionCategory,
+  deleteTransactionCategory
+} from '@/service/dataManage';
 import ModalAddIC from './_modalAddItemCategory.vue';
 import ModalUpdateIC from './_modalEditItemCategory.vue';
-import { validate } from 'vee-validate';
+import ModalAddUnit from './_modalAddUnit.vue';
+import ModalUpdateUnit from './_modalEditUnit.vue';
+import ModalAddTransactionCategory from './_modalAddTransactionCategory.vue';
+import ModalUpdateTC from './_modalEditTransactionCategory.vue';
 
 const page = ref({ title: 'Data Management' });
 
@@ -160,6 +258,7 @@ const breadcrumbs = ref([
   { title: 'Data Management', disabled: false, href: '#' }
 ]);
 
+const isPanelOpen = ref(false);
 //------------------Item Category --------------------
 interface IDataItemCategory {
   item_cat_id: number;
@@ -172,10 +271,10 @@ const dataGridItemCategory = reactive({
 });
 
 const itemCategoryHeaders = reactive([
-  { label: 'Item Category ID', value: 'item_cat_id', field: 'item_cat_id' },
-  { label: 'Item Category Name', value: 'item_cat_name', field: 'item_cat_name' },
-  { label: 'Active', value: 'isReferenced', field: 'isReferenced' },
-  { label: 'Action', field: 'Action' }
+  { label: 'Item Category ID', value: 'item_cat_id', field: 'item_cat_id', width: '20' },
+  { label: 'Item Category Name', value: 'item_cat_name', field: 'item_cat_name', width: '30' },
+  { label: 'Active', value: 'isReferenced', field: 'isReferenced', width: '20' },
+  { label: 'Action', field: 'Action', width: '20' }
 ]);
 
 const dataItemCategory = async () => {
@@ -273,14 +372,33 @@ const dataGridUnit = reactive({
 });
 
 const unitHeaders = reactive([
-  { label: 'Unit ID', value: 'unit_id', field: 'unit_id' },
-  { label: 'Unit Name', value: 'unit_name', field: 'unit_name' },
-  { label: 'Active', value: 'isReferenced', field: 'isReferenced' }
+  { label: 'Unit ID', value: 'unit_id', field: 'unit_id', width: '20' },
+  { label: 'Unit Name', value: 'unit_name', field: 'unit_name', width: '30' },
+  { label: 'Active', value: 'isReferenced', field: 'isReferenced', width: '20' }
 ]);
 
 const dataUnit = async () => {
   const res = await getAllUnit();
   dataGridUnit.dataList = res.data;
+};
+
+const modalAddUnit = ref(false);
+const modalUpdateUnit = ref(false);
+
+const addUnit = () => {
+  modalAddUnit.value = true;
+};
+
+const updateUnit = () => {
+  modalUpdateUnit.value = true;
+};
+
+const handleAddUnit = () => {
+  dataUnit();
+};
+
+const handleUpdateUnit = () => {
+  dataUnit();
 };
 
 const UNcurrentPage = ref(1);
@@ -306,11 +424,145 @@ const UNtotalPages = computed(() => {
 const UNcurrentIndex = computed(() => {
   return (UNcurrentPage.value - 1) * UNperPage.value;
 });
+
+const delete_Unit = async (id: number, name: string) => {
+  const item_id = id;
+  try {
+    const confirmResult = await Swal.fire({
+      title: 'Are you sure to delete?',
+      text: `${name}`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!'
+    });
+    if (confirmResult.isConfirmed) {
+      await deleteUnit(id);
+      Swal.fire({
+        title: 'Deleted!',
+        text: 'Your unit has been deleted.',
+        icon: 'success',
+        timer: 1500,
+        showConfirmButton: false
+      }).then(() => {
+        dataUnit();
+      });
+    }
+  } catch (error) {
+    console.error('Error while deleting unit:', error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: 'Something went wrong while deleting the unit.'
+    });
+  }
+};
 //------------------ Unit --------------------
+
+//================== Transaction Category =========================
+interface IDataTC {
+  trans_cat_id: number;
+  trans_cat_name: string;
+  isReferenced: boolean;
+}
+
+const dataGridTC = reactive({
+  dataList: [] as IDataTC[]
+});
+
+const TCHeaders = reactive([
+  { label: 'Trans Category ID', value: 'trans_cat_id', field: 'trans_cat_id', width: '20' },
+  { label: 'Trans Category Name', value: 'trans_cat_name', field: 'trans_cat_name', width: '30' },
+  { label: 'Active', value: 'isReferenced', field: 'isReferenced', width: '20' }
+]);
+
+const dataTC = async () => {
+  const res = await getAllTransactionCategory();
+  dataGridTC.dataList = res.data;
+};
+
+const modalAddTC = ref(false);
+const modalUpdateTC = ref(false);
+
+const addTC = () => {
+  modalAddTC.value = true;
+};
+
+const updateTC = () => {
+  modalUpdateTC.value = true;
+};
+
+const handleAddTC = () => {
+  dataTC();
+};
+
+const handleUpdateTC = () => {
+  dataTC();
+};
+
+const TCcurrentPage = ref(1);
+const TCperPage = ref(5);
+const TCsearchQuery = ref('');
+
+const TCfilteredData = computed(() => {
+  return dataGridTC.dataList.filter((item) => {
+    return item.trans_cat_name.toLowerCase().includes(TCsearchQuery.value.toLowerCase());
+  });
+});
+
+const TCpaginatedData = computed(() => {
+  const start = (TCcurrentPage.value - 1) * TCperPage.value;
+  const end = Math.min(start + TCperPage.value, TCfilteredData.value.length);
+  return TCfilteredData.value.slice(start, end);
+});
+
+const TCtotalPages = computed(() => {
+  return Math.ceil(TCfilteredData.value.length / TCperPage.value);
+});
+
+const TCcurrentIndex = computed(() => {
+  return (UNcurrentPage.value - 1) * UNperPage.value;
+});
+
+const deleteTC = async (id: number, name: string) => {
+  const item_id = id;
+  try {
+    const confirmResult = await Swal.fire({
+      title: 'Are you sure to delete?',
+      text: `${name}`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Yes, delete it!'
+    });
+    if (confirmResult.isConfirmed) {
+      await deleteTransactionCategory(id);
+      Swal.fire({
+        title: 'Deleted!',
+        text: 'Your Transaction Category has been deleted.',
+        icon: 'success',
+        timer: 1500,
+        showConfirmButton: false
+      }).then(() => {
+        dataTC();
+      });
+    }
+  } catch (error) {
+    console.error('Error while deleting Transaction Category:', error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: 'Something went wrong while deleting the Transaction Category.'
+    });
+  }
+};
 
 onMounted(() => {
   dataItemCategory();
   dataUnit();
+  dataTC();
 });
 </script>
 

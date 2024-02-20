@@ -7,7 +7,7 @@
     </template>
     <v-card>
       <v-card-title>
-        <span class="h3"><v-icon size="small" color="primary">mdi-pencil</v-icon> Edit Item Category</span>
+        <span class="h3"><v-icon size="small" color="primary">mdi-pencil</v-icon> Edit Unit</span>
       </v-card-title>
       <v-card-text>
         <v-container>
@@ -15,12 +15,12 @@
             <v-col cols="12">
               <v-text-field
               autofocus
-                v-model="ICName"
+                v-model="unitName"
                 :counter="50"
                 label="Item category name*"
                 hint="Enter up to 50 characters"
                 :rules="[(v) => (!!v && v.length <= 50) || 'Please enter data']"
-                :error-messages="ICName.length > 50 ? ['****Maximum 50 characters****'] : []"
+                :error-messages="unitName.length > 50 ? ['****Maximum 50 characters****'] : []"
                 required
               ></v-text-field>
             </v-col>
@@ -48,30 +48,30 @@
 <script setup lang="ts">
 import { ref, defineProps, defineEmits, onMounted, watch } from 'vue';
 import Swal from 'sweetalert2';
-import { updateItemCategory } from '@/service/dataManage';
+import { updateUnit } from '@/service/dataManage';
 
 interface Props {
-  item_cat_id: number;
-  item_cat_name: string;
+  unit_id: number;
+  unit_name: string;
 }
 
 const props = defineProps<Props>();
 
-const emit = defineEmits(['updateIC']);
+const emit = defineEmits(['updateUnit']);
 const validationDialog = ref(false);
 const dialog = ref(false);
-const ICName = ref(props.item_cat_name);
-// ICName.value = props.item_cat_name;
+const unitName = ref(props.unit_name);
+// unitName.value = props.unit_name;
 
 const saveItem = async () => {
-  if (!ICName.value) {
+  if (!unitName.value) {
     validationDialog.value = true;
     return;
   }
 
   try {
-    const data = { item_cat_name: ICName.value };
-    const res = await updateItemCategory(props.item_cat_id, data);
+    const data = { unit_name: unitName.value };
+    const res = await updateUnit(props.unit_id, data);
     console.log('Item category updated successfully:', res);
     clearFormData();
     Swal.fire({
@@ -81,7 +81,7 @@ const saveItem = async () => {
       timer: 2000
     });
     dialog.value = false;
-    emit('updateIC', res);
+    emit('updateUnit', res);
   } catch (error) {
     console.error('Error while updating item category:', error);
     Swal.fire({
@@ -94,10 +94,10 @@ const saveItem = async () => {
 };
 
 const clearFormData = () => {
-  ICName.value = '';
+  unitName.value = '';
 };
 
 watch(props, () => {
-  ICName.value = props.item_cat_name;
+  unitName.value = props.unit_name;
 });
 </script>

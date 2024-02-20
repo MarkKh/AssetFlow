@@ -18,9 +18,6 @@ const itemCategoryModel = {
       throw error;
     }
   },
-  
-  
-  
 
   getItemCategoryById: (categoryId) => {
     return pool.promise().query('SELECT * FROM item_category WHERE item_cat_id = ?', [categoryId])

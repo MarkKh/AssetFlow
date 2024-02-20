@@ -1,16 +1,24 @@
 const { pool } = require("../db/db-config");
 
 const unitsModel = {
-  getAllUnits: () => {
-    return pool
-      .promise()
-      .query("SELECT * FROM units")
-      .then(([rows]) => rows)
-      .catch((error) => {
-        console.error("Error getting units:", error);
-        throw error;
+  getAllUnits: async () => {
+    try {
+      const unitData = await pool.promise().query("SELECT * FROM units");
+
+      const resultPromises = unitData[0].map(async (category) => {
+        const queryResult = await pool.promise().query(`SELECT COUNT(*) AS count FROM items WHERE item_unit = '${category.unit_id}'`);
+        const rowCount = queryResult[0][0].count;
+        return { ...category, isReferenced: rowCount > 0 };
       });
+
+      const categorizedItems = await Promise.all(resultPromises);
+      return categorizedItems;
+    } catch (error) {
+      console.error("Error getting units:", error);
+      throw error;
+    }
   },
+  
 
   getUnitById: (unitId) => {
     return pool

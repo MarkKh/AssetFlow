@@ -14,12 +14,12 @@
           <v-row>
             <v-col cols="12">
               <v-text-field
-                v-model="formData.ICName"
+                v-model="ICName"
                 :counter="50"
                 label="Item category name*"
                 hint="Enter up to 50 characters"
                 :rules="[(v) => (!!v && v.length <= 50) || 'Please enter data']"
-                :error-messages="formData.ICName.length > 50 ? ['****Maximum 50 characters****'] : []"
+                :error-messages="ICName.length > 50 ? ['****Maximum 50 characters****'] : []"
                 required
               ></v-text-field>
             </v-col>
@@ -45,36 +45,31 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, defineProps, defineEmits } from 'vue';
+import { ref, defineProps, defineEmits, onMounted, watch } from 'vue';
 import Swal from 'sweetalert2';
 import { updateItemCategory } from '@/service/dataManage';
 
-const props = defineProps({
-  item_cat_id: Number,
-  item_cat_name: String
-});
+interface Props {
+  item_cat_id: number;
+  item_cat_name: string;
+}
 
+const props = defineProps<Props>();
 
 const emit = defineEmits(['updateIC']);
 const validationDialog = ref(false);
 const dialog = ref(false);
-
-interface FormData {
-  ICName: string;
-}
-
-const formData: FormData = reactive({
-  ICName: props.item_cat_name || ''
-});
+const ICName = ref(props.item_cat_name);
+// ICName.value = props.item_cat_name;
 
 const saveItem = async () => {
-  if (!formData.ICName) {
+  if (!ICName.value) {
     validationDialog.value = true;
     return;
   }
 
   try {
-    const data = { item_cat_name: formData.ICName };
+    const data = { item_cat_name: ICName.value };
     const res = await updateItemCategory(props.item_cat_id, data);
     console.log('Item category updated successfully:', res);
     clearFormData();
@@ -98,6 +93,10 @@ const saveItem = async () => {
 };
 
 const clearFormData = () => {
-  formData.ICName = '';
+  ICName.value = '';
 };
+
+watch(props, () => {
+  ICName.value = props.item_cat_name;
+});
 </script>

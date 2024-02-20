@@ -20,7 +20,6 @@
                   <th v-for="(header, index) in itemCategoryHeaders" :key="index" class="header-cell">
                     <span>{{ header.label }}</span>
                   </th>
-                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -35,12 +34,8 @@
                         <v-chip size="small" text="InActive" color="warning" variant="tonal" class="mr-2" />
                       </div>
                     </template>
-                    <template v-else>
-                      {{ item[header.field] }}
-                    </template>
-                  </td>
-                  <td>
-                    <v-tooltip location="top">
+                    <template v-else-if="header.field == 'Action'"> 
+                      <v-tooltip location="top">
                       <template v-slot:activator="{ props }">
                         <ModalUpdateIC
                           @click="updateIC"
@@ -65,6 +60,10 @@
                       </template>
                       <span>Delete</span>
                     </v-tooltip>
+                    </template>
+                    <template v-else>
+                      {{ item[header.field] }}
+                    </template>
                   </td>
                 </tr>
               </tbody>
@@ -79,7 +78,59 @@
         <UiParentCard class="mt-6">
           <div class="flex mb-4">
             <h2 class="flex-grow">Unit Management</h2>
+            <div class="search-container">
+              <input type="text" v-model="UNsearchQuery" placeholder="Search..." class="search-input" />
+              <i class="mdi mdi-magnify search-icon"></i>
+            </div>
+            <!-- <ModalAddIC @click="addIC" @addIC="handleAddIC" /> -->
           </div>
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th v-for="(header, index) in unitHeaders" :key="index" class="header-cell">
+                    <span>{{ header.label }}</span>
+                  </th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(item, index) in UNpaginatedData" :key="index">
+                  <td>{{ UNcurrentIndex + index + 1 }}</td>
+                  <td v-for="(header, index) in unitHeaders" :key="index">
+                    <template v-if="header.field == 'isReferenced'">
+                      <div v-if="item.isReferenced">
+                        <v-chip size="small" text="Active" color="success" variant="tonal" class="mr-2" />
+                      </div>
+                      <div v-else>
+                        <v-chip size="small" text="InActive" color="warning" variant="tonal" class="mr-2" />
+                      </div>
+                    </template>
+                    <template v-else>
+                      {{ item[header.field] }}
+                    </template>
+                  </td>
+                  <td>
+                    <v-tooltip location="top"> <template v-slot:activator="{ props }"> </template> </v-tooltip>&nbsp
+
+                    <v-tooltip location="top">
+                      <template v-slot:activator="{ props }">
+                        <v-btn icon v-bind="props" size="small" :disabled="item.isReferenced">
+                          <v-icon color="grey-lighten-1"> mdi-trash-can-outline </v-icon>
+                        </v-btn>
+                      </template>
+                      <span>Delete</span>
+                    </v-tooltip>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <v-container class="max-width"
+            ><v-row justify="end">
+              <v-pagination :length="UNtotalPages" :total-visible="3" v-model="UNcurrentPage" :size="20"></v-pagination> </v-row
+          ></v-container>
         </UiParentCard>
 
         <UiParentCard class="mt-6">
@@ -97,9 +148,10 @@ import Swal from 'sweetalert2';
 import { ref, reactive, computed, defineEmits, onMounted } from 'vue';
 import BaseBreadcrumb from '@/components/shared/BaseBreadcrumb.vue';
 import UiParentCard from '@/components/shared/UiParentCard.vue';
-import { getAllItemCategory, deleteItemCategory } from '@/service/dataManage';
+import { getAllItemCategory, deleteItemCategory, getAllUnit } from '@/service/dataManage';
 import ModalAddIC from './_modalAddItemCategory.vue';
 import ModalUpdateIC from './_modalEditItemCategory.vue';
+import { validate } from 'vee-validate';
 
 const page = ref({ title: 'Data Management' });
 
@@ -122,7 +174,8 @@ const dataGridItemCategory = reactive({
 const itemCategoryHeaders = reactive([
   { label: 'Item Category ID', value: 'item_cat_id', field: 'item_cat_id' },
   { label: 'Item Category Name', value: 'item_cat_name', field: 'item_cat_name' },
-  { label: 'Active', value: 'isReferenced', field: 'isReferenced' }
+  { label: 'Active', value: 'isReferenced', field: 'isReferenced' },
+  { label: 'Action', field: 'Action' }
 ]);
 
 const dataItemCategory = async () => {
@@ -208,8 +261,56 @@ const deleteIC = async (id: number, name: string) => {
 };
 //------------------Item Category --------------------
 
+//------------------ Unit --------------------
+interface IDataUnit {
+  unit_id: number;
+  unit_name: string;
+  isReferenced: boolean;
+}
+
+const dataGridUnit = reactive({
+  dataList: [] as IDataUnit[]
+});
+
+const unitHeaders = reactive([
+  { label: 'Unit ID', value: 'unit_id', field: 'unit_id' },
+  { label: 'Unit Name', value: 'unit_name', field: 'unit_name' },
+  { label: 'Active', value: 'isReferenced', field: 'isReferenced' }
+]);
+
+const dataUnit = async () => {
+  const res = await getAllUnit();
+  dataGridUnit.dataList = res.data;
+};
+
+const UNcurrentPage = ref(1);
+const UNperPage = ref(5);
+const UNsearchQuery = ref('');
+
+const UNfilteredData = computed(() => {
+  return dataGridUnit.dataList.filter((item) => {
+    return item.unit_name.toLowerCase().includes(UNsearchQuery.value.toLowerCase());
+  });
+});
+
+const UNpaginatedData = computed(() => {
+  const start = (UNcurrentPage.value - 1) * UNperPage.value;
+  const end = Math.min(start + UNperPage.value, UNfilteredData.value.length);
+  return UNfilteredData.value.slice(start, end);
+});
+
+const UNtotalPages = computed(() => {
+  return Math.ceil(UNfilteredData.value.length / UNperPage.value);
+});
+
+const UNcurrentIndex = computed(() => {
+  return (UNcurrentPage.value - 1) * UNperPage.value;
+});
+//------------------ Unit --------------------
+
 onMounted(() => {
   dataItemCategory();
+  dataUnit();
 });
 </script>
 

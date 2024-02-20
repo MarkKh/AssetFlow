@@ -15,7 +15,7 @@ export const createItemCategory = async (data: any) => {
         const res = await axios.post('http://localhost:7031/api/item-categories', data);
         return res.data;
     } catch (error) {
-        console.error("Error while posting inventory:", error);
+        console.error("Error while posting item category:", error);
         throw error;
     }
 }
@@ -25,7 +25,17 @@ export const deleteItemCategory = async (id: number) => {
         const res = await axios.delete(`http://localhost:7031/api/item-categorie/${id}`);
         return res.data;
     } catch (error) {
-        console.error("Error while deleting inventory:", error);
+        console.error("Error while deleting item category:", error);
+        throw error;
+    }
+}
+
+export const updateItemCategory = async (id: number, data: any) => {
+    try {
+        const res = await axios.put(`http://localhost:7031/api/item-categorie/${id}`, data);
+        return res.data;
+    } catch (error) {
+        console.error("Error while updating item category:", error);
         throw error;
     }
 }

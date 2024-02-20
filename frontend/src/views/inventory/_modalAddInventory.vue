@@ -7,7 +7,7 @@
     </template>
     <v-card>
       <v-card-title>
-        <span class="h3">Add New Item</span>
+        <span class="h3"><v-icon size="small" color="primary">mdi-plus</v-icon> Add New Item</span>
       </v-card-title>
       <v-card-text>
         <v-container>

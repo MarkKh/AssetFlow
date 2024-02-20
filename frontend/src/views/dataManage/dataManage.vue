@@ -1,5 +1,3 @@
-
-import type { getAllItemCategory } from '@/service/masterdata';
 <template>
   <div>
     <BaseBreadcrumb :title="page.title" :breadcrumbs="breadcrumbs"></BaseBreadcrumb>
@@ -12,7 +10,7 @@ import type { getAllItemCategory } from '@/service/masterdata';
               <input type="text" v-model="ICsearchQuery" placeholder="Search..." class="search-input" />
               <i class="mdi mdi-magnify search-icon"></i>
             </div>
-            <ModalAddIC @click="addIC"  @addIC="handleAddIC" />
+            <ModalAddIC @click="addIC" @addIC="handleAddIC" />
           </div>
           <div class="table-container">
             <table>
@@ -44,16 +42,24 @@ import type { getAllItemCategory } from '@/service/masterdata';
                   <td>
                     <v-tooltip location="top">
                       <template v-slot:activator="{ props }">
-                        <v-btn icon v-bind="props" size="small">
-                          <v-icon color="grey-lighten-1"> mdi-pencil </v-icon>
-                        </v-btn>
-                      </template>
-                      <span>Edit</span> </v-tooltip
+                        <ModalUpdateIC
+                          @click="updateIC"
+                          @updateIC="handleUpdateIC"
+                          :item_cat_id="item.item_cat_id"
+                          :item_cat_name="item.item_cat_name"
+                        />
+                      </template> </v-tooltip
                     >&nbsp
 
                     <v-tooltip location="top">
                       <template v-slot:activator="{ props }">
-                        <v-btn icon v-bind="props" size="small" :disabled="item.isReferenced" @click="deleteIC(item.item_cat_id, item.item_cat_name)">
+                        <v-btn
+                          icon
+                          v-bind="props"
+                          size="small"
+                          :disabled="item.isReferenced"
+                          @click="deleteIC(item.item_cat_id, item.item_cat_name)"
+                        >
                           <v-icon color="grey-lighten-1"> mdi-trash-can-outline </v-icon>
                         </v-btn>
                       </template>
@@ -91,8 +97,9 @@ import Swal from 'sweetalert2';
 import { ref, reactive, computed, defineEmits, onMounted } from 'vue';
 import BaseBreadcrumb from '@/components/shared/BaseBreadcrumb.vue';
 import UiParentCard from '@/components/shared/UiParentCard.vue';
-import { getAllItemCategory,deleteItemCategory } from '@/service/dataManage';
-import ModalAddIC from './_modalAddItemCategory.vue'
+import { getAllItemCategory, deleteItemCategory } from '@/service/dataManage';
+import ModalAddIC from './_modalAddItemCategory.vue';
+import ModalUpdateIC from './_modalEditItemCategory.vue';
 
 const page = ref({ title: 'Data Management' });
 
@@ -148,16 +155,25 @@ const ICcurrentIndex = computed(() => {
 });
 
 const modalAddIC = ref(false);
+const modalUpdate = ref(false);
 
 const addIC = () => {
   modalAddIC.value = true;
 };
 
-const handleAddIC = () => {
-    dataItemCategory();
+const updateIC = () => {
+  modalUpdate.value = true;
 };
 
-const deleteIC = async (id: number,name: string) => {
+const handleAddIC = () => {
+  dataItemCategory();
+};
+
+const handleUpdateIC = () => {
+  dataItemCategory();
+};
+
+const deleteIC = async (id: number, name: string) => {
   const item_id = id;
   try {
     const confirmResult = await Swal.fire({

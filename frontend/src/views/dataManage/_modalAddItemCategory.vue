@@ -7,7 +7,7 @@
     </template>
     <v-card>
       <v-card-title>
-        <span class="h3">Add New Item Category</span>
+        <span class="h3"><v-icon size="small" color="primary">mdi-plus</v-icon> Add New Item Category</span>
       </v-card-title>
       <v-card-text>
         <v-container>
@@ -16,7 +16,7 @@
               <v-text-field
                 v-model="formData.ICName"
                 :counter="50"
-                label="Item name*"
+                label="Item category name*"
                 hint="Enter up to 50 characters"
                 :rules="[(v) => (!!v && v.length <= 50) || 'Please enter data']"
                 :error-messages="formData.ICName.length > 50 ? ['****Maximum 50 characters****'] : []"

@@ -1,0 +1,103 @@
+<template>
+  <v-dialog v-model="dialog" persistent width="600">
+    <template v-slot:activator="{ props }">
+      <v-btn icon size="small" v-bind="props">
+        <v-icon>mdi-pencil</v-icon>
+      </v-btn>
+    </template>
+    <v-card>
+      <v-card-title>
+        <span class="h3"><v-icon size="small" color="primary">mdi-pencil</v-icon> Edit Item Category</span>
+      </v-card-title>
+      <v-card-text>
+        <v-container>
+          <v-row>
+            <v-col cols="12">
+              <v-text-field
+                v-model="formData.ICName"
+                :counter="50"
+                label="Item category name*"
+                hint="Enter up to 50 characters"
+                :rules="[(v) => (!!v && v.length <= 50) || 'Please enter data']"
+                :error-messages="formData.ICName.length > 50 ? ['****Maximum 50 characters****'] : []"
+                required
+              ></v-text-field>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="blue darken-1" variant="text" @click="dialog = false">Close</v-btn>
+        <v-btn color="blue darken-1" variant="text" @click="saveItem">Save</v-btn>
+      </v-card-actions>
+    </v-card>
+    <v-dialog v-model="validationDialog" max-width="300">
+      <v-card>
+        <v-card-text><span style="color: red">Please fill in all required fields.</span></v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" text @click="validationDialog = false">OK</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+  </v-dialog>
+</template>
+
+<script setup lang="ts">
+import { ref, reactive, defineProps, defineEmits } from 'vue';
+import Swal from 'sweetalert2';
+import { updateItemCategory } from '@/service/dataManage';
+
+const props = defineProps({
+  item_cat_id: Number,
+  item_cat_name: String
+});
+
+
+const emit = defineEmits(['updateIC']);
+const validationDialog = ref(false);
+const dialog = ref(false);
+
+interface FormData {
+  ICName: string;
+}
+
+const formData: FormData = reactive({
+  ICName: props.item_cat_name || ''
+});
+
+const saveItem = async () => {
+  if (!formData.ICName) {
+    validationDialog.value = true;
+    return;
+  }
+
+  try {
+    const data = { item_cat_name: formData.ICName };
+    const res = await updateItemCategory(props.item_cat_id, data);
+    console.log('Item category updated successfully:', res);
+    clearFormData();
+    Swal.fire({
+      icon: 'success',
+      title: 'Your item category has been updated',
+      showConfirmButton: false,
+      timer: 2000
+    });
+    dialog.value = false;
+    emit('updateIC', res);
+  } catch (error) {
+    console.error('Error while updating item category:', error);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'An error occurred while updating the item category. Please try again later.',
+      confirmButtonText: 'OK'
+    });
+  }
+};
+
+const clearFormData = () => {
+  formData.ICName = '';
+};
+</script>

@@ -1,25 +1,25 @@
 <template>
   <v-dialog v-model="dialog" persistent width="600">
     <template v-slot:activator="{ props }">
-      <v-btn icon density="compact" v-bind="props">
-        <v-icon>mdi-plus</v-icon>
+      <v-btn icon size="small" v-bind="props">
+        <v-icon>mdi-pencil</v-icon>
       </v-btn>
     </template>
     <v-card>
       <v-card-title>
-        <span class="h3"><v-icon size="small" color="primary">mdi-plus</v-icon> Add New Item</span>
+        <span class="h3"><v-icon size="small" color="primary">mdi-pencil</v-icon> Edit Item</span>
       </v-card-title>
       <v-card-text>
         <v-container>
           <v-row>
             <v-col cols="12">
               <v-text-field
-                v-model="formData.itemName"
+                v-model="newData.item_name"
                 :counter="50"
                 label="Item name*"
                 hint="Enter up to 50 characters"
                 :rules="[(v) => (!!v && v.length <= 50) || 'Please enter data']"
-                :error-messages="formData.itemName.length > 50 ? ['****Maximum 50 characters****'] : []"
+                :error-messages="newData.item_cat_name.length > 50 ? ['****Maximum 50 characters****'] : []"
                 required
               >
               </v-text-field>
@@ -27,7 +27,7 @@
 
             <v-col cols="12" sm="6">
               <v-select
-                v-model="formData.selectedCategory"
+                v-model="newData.item_cat_name"
                 :items="dropdownData.category.item_cat_name"
                 label="Category*"
                 :rules="[(v) => !!v || 'Please enter data']"
@@ -37,7 +37,7 @@
             </v-col>
             <v-col cols="12" sm="6">
               <v-select
-                v-model="formData.selectedUnit"
+                v-model="newData.unit_name"
                 :items="dropdownData.unit.unit_name"
                 label="Units*"
                 :rules="[(v) => !!v || 'Please enter data']"
@@ -49,14 +49,23 @@
               <v-text-field
                 min="0"
                 type="number"
-                v-model="formData.totalQuantity"
+                v-model="newData.item_total"
                 label="Total quantity in stock*"
                 :rules="[(v) => !!v || 'Please enter data']"
                 required
               ></v-text-field>
             </v-col>
             <v-col cols="12" sm="6" md="6">
-              <v-text-field v-model="formData.totalQuantity" label="Quantity in stock remaining" disabled required></v-text-field>
+              <v-text-field
+                min="0"
+                type="number"
+                v-model="newData.item_remain"
+                label="Quantity in stock remaining"
+                :error-messages="
+                  newData.item_remain > newData.item_total ? ['คงเหลือไม่สามารถมากกว่าสินค้าทั้งหมดได้'] : []
+                "
+                required
+              ></v-text-field>
             </v-col>
           </v-row>
         </v-container>
@@ -71,7 +80,7 @@
 
     <v-dialog v-model="validationDialog" max-width="300">
       <v-card>
-        <v-card-text><span style="color: red;">กรุณากรอกข้อมูลให้ครบถ้วน</span></v-card-text>
+        <v-card-text><span style="color: red">กรุณากรอกข้อมูลให้ครบถ้วน</span></v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="blue darken-1" @click="validationDialog = false">OK</v-btn>
@@ -79,26 +88,38 @@
       </v-card>
     </v-dialog>
 
+    <v-dialog v-model="validateTotalRemail" max-width="420">
+      <v-card>
+        <v-card-text><span style="color: red">ข้อมูลสินค้าคงเหลือไม่สามารถมากกว่าสินค้าทั้งหมดได้</span></v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" @click="validateTotalRemail = false">OK</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-dialog>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, defineEmits } from 'vue';
+import { ref, reactive, onMounted, defineEmits, watch } from 'vue';
 import { getAllItemCategory, getAllItemUnit } from '@/service/masterdata';
-import { createInventory } from '@/service/inventory';
+import { updateInventory } from '@/service/inventory';
 import Swal from 'sweetalert2';
 
-const emit = defineEmits(['addItem']);
+const emit = defineEmits(['editItem']);
 const validationDialog = ref(false);
+const validateTotalRemail = ref(false);
 
-
-interface FormData {
-  itemName: string;
-  totalQuantity: string;
-  remainingQuantity: string;
-  selectedUnit: string | null;
-  selectedCategory: string | null;
+interface Props {
+  item_id: number;
+  item_name: string;
+  item_total: number;
+  item_remain: number;
+  unit_name: string;
+  item_cat_name: string;
 }
+
+const props = defineProps<Props>();
 
 const dialog = ref(false);
 const dropdownData = reactive({
@@ -112,12 +133,37 @@ const dropdownData = reactive({
   }
 });
 
-const formData: FormData = reactive({
-  itemName: '',
-  totalQuantity: '',
-  remainingQuantity: '',
-  selectedUnit: null,
-  selectedCategory: null
+const newData = reactive({
+  item_id: props.item_id || '',
+  item_name: props.item_name || '',
+  item_total: props.item_total,
+  item_remain: props.item_remain,
+  unit_name: props.unit_name || '',
+  item_cat_name: props.item_cat_name || ''
+});
+
+onMounted(() => {
+  watch(
+    [
+      () => props.item_id,
+      () => props.item_name,
+      () => props.item_total,
+      () => props.item_remain,
+      () => props.unit_name,
+      () => props.item_cat_name
+    ],
+    (
+      [newItemId, newItemName, newItemTotal, newItemRemain, newUnitName, newItemCatName],
+      [oldItemId, oldItemName, oldItemTotal, oldItemRemain, oldUnitName, oldItemCatName]
+    ) => {
+      newData.item_id = newItemId || '';
+      newData.item_name = newItemName || '';
+      newData.item_total = newItemTotal;
+      newData.item_remain = newItemRemain;
+      newData.unit_name = newUnitName || '';
+      newData.item_cat_name = newItemCatName || '';
+    }
+  );
 });
 
 const masterData = async () => {
@@ -134,26 +180,30 @@ const masterData = async () => {
 };
 
 const saveItem = async () => {
-  if (!formData.itemName || !formData.selectedCategory || !formData.selectedUnit || !formData.totalQuantity) {
+  if (!newData.item_name || !newData.item_total || !newData.item_remain || !newData.item_cat_name || !newData.unit_name) {
     validationDialog.value = true;
-    return ;
+    return;
   }
 
-  const selectedUnitIndex = dropdownData.unit.unit_name.findIndex((name) => name === formData.selectedUnit);
-  const selectedCategoryIndex = dropdownData.category.item_cat_name.findIndex((name) => name === formData.selectedCategory);
+  if (newData.item_remain > newData.item_total) {
+    validateTotalRemail.value = true;
+    return;
+  }
+
+  const selectedUnitIndex = dropdownData.unit.unit_name.findIndex((name) => name === newData.unit_name);
+  const selectedCategoryIndex = dropdownData.category.item_cat_name.findIndex((name) => name === newData.item_cat_name);
 
   const paramData = {
-    item_name: formData.itemName,
+    item_name: newData.item_name,
     item_cat: dropdownData.category.item_cat_id[selectedCategoryIndex],
     item_unit: dropdownData.unit.unit_id[selectedUnitIndex],
-    item_total: formData.totalQuantity,
-    item_remain: formData.totalQuantity
+    item_total: newData.item_total,
+    item_remain: newData.item_remain
   };
 
   try {
-    const res = await createInventory(paramData);
+    const res = await updateInventory(props.item_id, paramData);
     console.log('Inventory created successfully:', res);
-    clearFormData();
     Swal.fire({
       icon: 'success',
       title: 'Your item has been saved',
@@ -161,7 +211,7 @@ const saveItem = async () => {
       timer: 2000
     });
     dialog.value = false;
-    emit('addItem', res);
+    emit('editItem', res);
   } catch (error) {
     console.error('Error while creating inventory:', error);
     Swal.fire({
@@ -171,14 +221,6 @@ const saveItem = async () => {
       confirmButtonText: 'OK'
     });
   }
-};
-
-const clearFormData = () => {
-  formData.itemName = '';
-  formData.totalQuantity = '';
-  formData.remainingQuantity = '';
-  formData.selectedUnit = null;
-  formData.selectedCategory = null;
 };
 
 onMounted(() => {

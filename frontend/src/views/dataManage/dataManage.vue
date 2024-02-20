@@ -50,7 +50,7 @@
                             :item_cat_name="item.item_cat_name"
                           />
                         </template>
-                      </v-tooltip>
+                      </v-tooltip>&nbsp
                       <v-tooltip location="top">
                         <template v-slot:activator="{ props }">
                           <v-btn

@@ -57,9 +57,14 @@ v-container
 
                       <v-tooltip location="top">
                         <template v-slot:activator="{ props }">
-                          <v-btn icon v-bind="props" size="small">
-                            <v-icon color="grey-lighten-1"> mdi-pencil </v-icon>
-                          </v-btn>
+                          <ModalEditInventory @click="updateInventory" @editItem="handleUpdateIem()"
+                            :item_id="item.item_id" 
+                            :item_name="item.item_name"
+                            :item_total="item.item_total"
+                            :item_remain="item.item_remain" 
+                            :unit_name="item.unit_name"
+                            :item_cat_name="item.item_cat_name"
+                          />
                         </template>
                         <span>Edit</span> </v-tooltip
                       >&nbsp
@@ -102,12 +107,19 @@ import UiParentCard from '@/components/shared/UiParentCard.vue';
 import { getAllInventory, deleteInventory } from '@/service/inventory';
 import ModalAddInventory from './_modalAddInventory.vue';
 import Swal from 'sweetalert2';
+import ModalEditInventory from './_modalEditInventory.vue';
 
 const modalAddInventory = ref(false);
+const modalUpdate = ref(false)
 
 const addInventory = () => {
   modalAddInventory.value = true;
 };
+
+const updateInventory = () => {
+  modalUpdate.value = true;
+};
+
 
 interface IData {
   item_id: number;
@@ -150,6 +162,10 @@ const handleAddItem = () => {
   dataInventory();
 };
 
+const handleUpdateIem = () => {
+  dataInventory()
+}
+
 const checkClick = (id: number) => {
   alert(id);
 };
@@ -179,11 +195,6 @@ const totalPages = computed(() => {
 const currentIndex = computed(() => {
   return (currentPage.value - 1) * perPage.value;
 });
-
-
-const editItem = (id: number) => {
-  alert('Success');
-};
 
 const deleteItem = async (id: number,name: string) => {
   const item_id = id;

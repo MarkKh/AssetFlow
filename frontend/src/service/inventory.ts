@@ -29,3 +29,13 @@ export const deleteInventory = async (itemId: number) => {
         throw error;
     }
 }
+
+export const updateInventory = async (id: number, data: any) => {
+    try {
+      const res = await axios.put(`http://localhost:7031/api/item/${id}`, data);
+      return res.data;
+    } catch (error) {
+      console.error('Error while updating item category:', error);
+      throw error;
+    }
+  };

@@ -36,7 +36,7 @@
 
     <v-dialog v-model="validationDialog" max-width="300">
       <v-card>
-        <v-card-text><span style="color: red">Please fill in all required fields.</span></v-card-text>
+        <v-card-text><span style="color: red">กรุณากรอกข้อมูลให้ครบถ้วน</span></v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="blue darken-1" text @click="validationDialog = false">OK</v-btn>

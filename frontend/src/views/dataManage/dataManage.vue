@@ -5,7 +5,7 @@
       <v-col cols="12" md="12">
         <UiParentCard>
           <div class="flex mb-4">
-            <h2 class="flex-grow">Item Category Management</h2>
+            <h2 class="flex-grow">การจัดการหมวดหมู่รายการ (Item Category Management)</h2>
             <div class="search-container">
               <input type="text" v-model="ICsearchQuery" placeholder="Search..." class="search-input" />
               <i class="mdi mdi-magnify search-icon"></i>
@@ -83,7 +83,7 @@
 
         <UiParentCard class="mt-6">
           <div class="flex mb-4">
-            <h2 class="flex-grow">Unit Management</h2>
+            <h2 class="flex-grow">การจัดการหน่วยนับ (Unit Management)</h2>
             <div class="search-container">
               <input type="text" v-model="UNsearchQuery" placeholder="Search..." class="search-input" />
               <i class="mdi mdi-magnify search-icon"></i>
@@ -156,7 +156,7 @@
 
         <UiParentCard class="mt-6">
           <div class="flex mb-4">
-            <h2 class="flex-grow">Transaction Category Management</h2>
+            <h2 class="flex-grow">การจัดการหมวดหมู่ธุรกรรม (Transaction Category Management)</h2>
             <div class="search-container">
               <input type="text" v-model="TCsearchQuery" placeholder="Search..." class="search-input" />
               <i class="mdi mdi-magnify search-icon"></i>

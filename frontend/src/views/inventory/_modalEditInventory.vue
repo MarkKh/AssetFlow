@@ -203,21 +203,21 @@ const saveItem = async () => {
 
   try {
     const res = await updateInventory(props.item_id, paramData);
-    console.log('Inventory created successfully:', res);
+    console.log('Inventory update successfully:', res);
     Swal.fire({
       icon: 'success',
-      title: 'Your item has been saved',
+      title: 'Your item has been update',
       showConfirmButton: false,
       timer: 2000
     });
     dialog.value = false;
     emit('editItem', res);
   } catch (error) {
-    console.error('Error while creating inventory:', error);
+    console.error('Error while update inventory:', error);
     Swal.fire({
       icon: 'error',
       title: 'Error',
-      text: 'An error occurred while creating the inventory. Please try again later.',
+      text: 'An error occurred while update the inventory. Please try again later.',
       confirmButtonText: 'OK'
     });
   }

@@ -67,17 +67,17 @@ module.exports = {
             s.status_name
         FROM
             transections t
-        JOIN
+        LEFT JOIN
             items i ON t.item_id = i.item_id 
-        JOIN
+        LEFT JOIN
             users u ON t.user_id = u.user_id
-        JOIN
+        LEFT JOIN
             transection_category tc ON t.trans_cat_id = tc.trans_cat_id
-        JOIN
+        LEFT JOIN
             status s ON t.status_id = s.status_id
-        JOIN
+        LEFT JOIN
             units un ON i.item_unit = un.unit_id
-        JOIN
+        LEFT JOIN
             item_category ic ON i.item_id = ic.item_cat_id
         WHERE 
             t.trans_id = ?`,

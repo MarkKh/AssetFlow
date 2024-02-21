@@ -4,7 +4,7 @@ module.exports = {
   getAllUsers: () => {
     return pool
       .promise()
-      .query("SELECT * FROM users")
+      .query("SELECT user_id, CONCAT(user_firstname, ' ', user_lastname) AS full_name FROM users")
       .then(([results]) => results)
       .catch((err) => {
         console.log(err);

@@ -48,9 +48,13 @@ v-container
                     <div class="flex">
                       <v-tooltip location="top">
                         <template v-slot:activator="{ props }">
-                          <v-btn icon v-bind="props" size="small" @click="checkClick(item.item_id)" :disabled="!item.status">
-                            <v-icon color="grey-lighten-1"> mdi-book-arrow-down-outline </v-icon>
-                          </v-btn>
+                          <ModalAddTransaction @click="addTransaction()" @addTrans="dataInventory()"
+                            :item_id="item.item_id"
+                            :item_name="item.item_name"
+                            :item_total="item.item_total"
+                            :item_remain="item.item_remain"
+                            :isDisable="item.item_remain == 0"
+                          />
                         </template>
                         <span>Withdraw/Borrow</span> </v-tooltip
                       >&nbsp
@@ -108,9 +112,11 @@ import { getAllInventory, deleteInventory } from '@/service/inventory';
 import ModalAddInventory from './_modalAddInventory.vue';
 import Swal from 'sweetalert2';
 import ModalEditInventory from './_modalEditInventory.vue';
+import ModalAddTransaction from './_modalAddTransaction.vue';
 
 const modalAddInventory = ref(false);
 const modalUpdate = ref(false)
+const modalAddTransaction =ref(false)
 
 const addInventory = () => {
   modalAddInventory.value = true;
@@ -119,6 +125,10 @@ const addInventory = () => {
 const updateInventory = () => {
   modalUpdate.value = true;
 };
+
+const addTransaction = () => {
+  modalAddTransaction.value = true;
+}
 
 
 interface IData {

@@ -89,7 +89,7 @@ module.exports = {
       });
   },
 
-  createTransection: (newTransection) => {
+  createTransection : (newTransaction) => {
     const {
       item_id,
       user_id,
@@ -98,7 +98,7 @@ module.exports = {
       start_date,
       end_date,
       status_id,
-    } = newTransection;
+    } = newTransaction;
 
     return pool
       .promise()
@@ -109,13 +109,23 @@ module.exports = {
         [item_id, user_id, qty, trans_cat_id, start_date, end_date, status_id]
       )
       .then((result) => {
-        return { trans_id: result.insertId, ...newTransection };
+        const insertedId = result.insertId;
+        // Update item_remain in the items table
+        return pool.promise().query(
+          `UPDATE items 
+          SET item_remain = item_remain - ? 
+          WHERE item_id = ?`,
+          [qty, item_id]
+        ).then(() => {
+          return { trans_id: insertedId, ...newTransaction };
+        });
       })
       .catch((error) => {
-        console.error("Error creating transection:", error);
+        console.error("Error creating transaction:", error);
         throw error;
       });
   },
+
 
   updateTransection: (transId, updatedTransection) => {
     const {

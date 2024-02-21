@@ -4,7 +4,7 @@ const transectionsController = require("../controllers/transectionsController");
 
 router.get("/api/transections", transectionsController.getAllTransections);
 router.get("/api/transection/:id", transectionsController.getTransectionById);
-router.post("/apitransections/", transectionsController.createTransection);
+router.post("/api/transections", transectionsController.createTransection);
 router.put("/api/transection/:id", transectionsController.updateTransection);
 router.delete("/api/transection/:id", transectionsController.deleteTransection);
 

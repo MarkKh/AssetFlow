@@ -64,8 +64,9 @@
             </v-col>
           </v-row>
         </v-container>
-        <!-- <small><span style="color: red">*indicates required field</span></small> -->
+        <small><span style="color: blue">***กรณีเบิกของไม่ต้องใส่วันที่สิ้นสุด หากใส่กรุณาล้างข้อมูล</span></small>
       </v-card-text>
+
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="blue darken-1" variant="text" @click="dialog = false">Close</v-btn>
@@ -92,6 +93,16 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <v-dialog v-model="validationEnddate" max-width="400">
+      <v-card>
+        <v-card-text><span style="color: red">กรุณาเคลียข้อมูลวันที่สิ้นสุดเนื่องจากการเบิกของไม่จำเป็นต้องคืน</span></v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="blue darken-1" @click="validationEnddate = false">OK</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-dialog>
 </template>
 
@@ -103,7 +114,8 @@ import Swal from 'sweetalert2';
 
 const emit = defineEmits(['addTrans']);
 const validationDialog = ref(false);
-const validationRemain = ref(false)
+const validationRemain = ref(false);
+const validationEnddate = ref(false);
 
 interface Props {
   item_id: number;
@@ -172,13 +184,19 @@ const saveItem = async () => {
     return;
   }
 
-  if(formData.qty > props.item_remain){
+  if (formData.qty > props.item_remain) {
     validationRemain.value = true;
     return;
   }
 
   const selectUserIndex = dropdownData.users.user_name.findIndex((name) => name === formData.user_id);
   const selectTransIndex = dropdownData.trans.trans_name.findIndex((name) => name === formData.trans_cat_id);
+
+  if (dropdownData.trans.trans_id[selectTransIndex] == 1002 && formData.end_date) {
+    validationEnddate.value = true;
+    return;
+  }
+
   const paramData = {
     item_id: props.item_id,
     user_id: dropdownData.users.user_id[selectUserIndex],
@@ -186,7 +204,7 @@ const saveItem = async () => {
     trans_cat_id: dropdownData.trans.trans_id[selectTransIndex],
     start_date: formData.start_date,
     end_date: formData.end_date,
-    status_id: 1001
+    status_id: dropdownData.trans.trans_id[selectTransIndex] == 1001 ? 1001 : 1002
   };
 
   try {

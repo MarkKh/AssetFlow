@@ -21,7 +21,8 @@ module.exports = {
             t.start_date,
             t.end_date,
             s.status_id,
-            s.status_name
+            s.status_name,
+            CONCAT(u.user_firstname, ' ', u.user_lastname) AS full_name
         FROM
             transections t
         LEFT JOIN

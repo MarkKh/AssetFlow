@@ -1,4 +1,3 @@
-v-container
 <template>
   <div>
     <BaseBreadcrumb :title="page.title" :breadcrumbs="breadcrumbs"></BaseBreadcrumb>

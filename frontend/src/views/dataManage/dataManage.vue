@@ -161,7 +161,7 @@
               <input type="text" v-model="TCsearchQuery" placeholder="Search..." class="search-input" />
               <i class="mdi mdi-magnify search-icon"></i>
             </div>
-            <ModalAddTransactionCategory @click="addTC" @addTC="handleAddTC" />
+            <!-- <ModalAddTransactionCategory @click="addTC" @addTC="handleAddTC" /> -->
           </div>
           <div class="table-container">
             <table>
@@ -171,7 +171,7 @@
                   <th v-for="(header, index) in TCHeaders" :key="index" class="header-cell" :style="{ width: header.width + '%' }">
                     <span>{{ header.label }}</span>
                   </th>
-                  <th style="width: 20%">Actions</th>
+                  <!-- <th style="width: 20%">Actions</th> -->
                 </tr>
               </thead>
               <tbody>
@@ -190,7 +190,7 @@
                       {{ item[header.field] }}
                     </template>
                   </td>
-                  <td>
+                  <!-- <td>
                     <v-tooltip location="top">
                       <template v-slot:activator="{ props }">
                         <ModalUpdateTC
@@ -216,7 +216,7 @@
                       </template>
                       <span>Delete</span>
                     </v-tooltip>
-                  </td>
+                  </td> -->
                 </tr>
               </tbody>
             </table>

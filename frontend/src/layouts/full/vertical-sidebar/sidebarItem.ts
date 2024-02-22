@@ -49,7 +49,7 @@ const sidebarItem: menu[] = [
   {
     title: 'Transactions',
     icon: DashboardIcon,
-    // to: '/dashboard/default'
+    to: '/transaction'
   },
   // { header: 'Pages' },
   // {

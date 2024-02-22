@@ -130,9 +130,9 @@ const props = defineProps<Props>();
 const formData = reactive({
   user_id: '',
   qty: 0,
-  trans_cat_id: '',
+  trans_cat_id: 0,
   start_date: new Date().toJSON().slice(0, 10),
-  end_date: '',
+  end_date: null,
   status_id: ''
 });
 
@@ -195,6 +195,10 @@ const saveItem = async () => {
   if (dropdownData.trans.trans_id[selectTransIndex] == 1002 && formData.end_date) {
     validationEnddate.value = true;
     return;
+  }
+
+  if (formData.trans_cat_id == 1001){
+    formData.end_date = null
   }
 
   const paramData = {

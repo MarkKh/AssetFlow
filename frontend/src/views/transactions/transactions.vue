@@ -104,7 +104,7 @@
           </div>
           <v-container class="max-width">
             <v-row justify="end">
-              <v-pagination :length="ICtotalPages" :total-visible="3" v-model="ICcurrentPage" :size="20"></v-pagination>
+              <v-pagination :length="totalPages" :total-visible="3" v-model="currentPage" :size="20"></v-pagination>
             </v-row>
           </v-container>
         </UiParentCard>
@@ -188,6 +188,10 @@ const totalPages = computed(() => {
 const currentIndex = computed(() => {
   return (currentPage.value - 1) * perPage.value;
 });
+
+const returnItem = () => {
+
+}
 
 const formatDate = (dateString: string | null): string => {
   if (!dateString) return '-'; // กรณีไม่มีวันที่

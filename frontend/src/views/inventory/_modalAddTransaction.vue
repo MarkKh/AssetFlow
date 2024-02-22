@@ -130,7 +130,7 @@ const props = defineProps<Props>();
 const formData = reactive({
   user_id: '',
   qty: 0,
-  trans_cat_id: 0,
+  trans_cat_id: null,
   start_date: new Date().toJSON().slice(0, 10),
   end_date: null,
   status_id: ''

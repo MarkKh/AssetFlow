@@ -7,7 +7,7 @@
     </template>
     <v-card>
       <v-card-title>
-        <span class="h3"><v-icon size="small" color="primary">mdi-pencil</v-icon> Edit Item</span>
+        <span class="h3"><v-icon size="small" color="primary">mdi-pencil</v-icon> แก้ไขสินค้า </span>
       </v-card-title>
       <v-card-text>
         <v-container>
@@ -16,7 +16,7 @@
               <v-text-field
                 v-model="newData.item_name"
                 :counter="50"
-                label="Item name*"
+                label="ชื่อสินค้า*"
                 hint="Enter up to 50 characters"
                 :rules="[(v) => (!!v && v.length <= 50) || 'Please enter data']"
                 :error-messages="newData.item_cat_name.length > 50 ? ['****Maximum 50 characters****'] : []"
@@ -29,7 +29,7 @@
               <v-select
                 v-model="newData.item_cat_name"
                 :items="dropdownData.category.item_cat_name"
-                label="Category*"
+                label="ประเภทสินค้า*"
                 :rules="[(v) => !!v || 'Please enter data']"
                 required
               >
@@ -39,7 +39,7 @@
               <v-select
                 v-model="newData.unit_name"
                 :items="dropdownData.unit.unit_name"
-                label="Units*"
+                label="หน่วยนับ*"
                 :rules="[(v) => !!v || 'Please enter data']"
                 required
               >
@@ -50,7 +50,7 @@
                 min="0"
                 type="number"
                 v-model="newData.item_total"
-                label="Total quantity in stock*"
+                label="สินค้าทั้งหมด*"
                 :rules="[(v) => !!v || 'Please enter data']"
                 required
               ></v-text-field>
@@ -60,7 +60,7 @@
                 min="0"
                 type="number"
                 v-model="newData.item_remain"
-                label="Quantity in stock remaining"
+                label="สินค้าคงเหลือ"
                 :error-messages="
                   newData.item_remain > newData.item_total ? ['คงเหลือไม่สามารถมากกว่าสินค้าทั้งหมดได้'] : []
                 "

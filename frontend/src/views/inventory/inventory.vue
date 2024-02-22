@@ -5,7 +5,7 @@
       <v-col cols="12" md="12">
         <UiParentCard>
           <div class="flex mb-4">
-            <h2 class="flex-grow">Inventory items</h2>
+            <h2 class="flex-grow">สินค้าในคลัง</h2>
             <div class="search-container">
               <input type="text" v-model="searchQuery" placeholder="Search..." class="search-input" />
               <i class="mdi mdi-magnify search-icon"></i>
@@ -20,7 +20,7 @@
                   <th v-for="(header, index) in headers" :key="index" class="header-cell">
                     <span>{{ header.label }}</span>
                   </th>
-                  <th>Actions</th>
+                  <th>จัดการ</th>
                 </tr>
               </thead>
               <tbody>
@@ -154,12 +154,12 @@ const breadcrumbs = ref([
 ]);
 
 const headers = reactive([
-  { label: 'Name', value: 'item_id', field: 'item_name', sortable: true },
-  { label: 'Product type', value: 'item_cat_id', field: 'item_cat_name', sortable: true },
-  { label: 'Unit', value: 'unit_id', field: 'unit_name', sortable: true },
-  { label: 'All Stock', value: 'item_total', field: 'item_total', sortable: true },
-  { label: 'Remain Stock', value: 'item_remain', field: 'item_remain', sortable: true },
-  { label: 'Status', field: 'status', sortable: true }
+  { label: 'ชื่อสินค้า', value: 'item_id', field: 'item_name', sortable: true },
+  { label: 'ประเภทสินค้า', value: 'item_cat_id', field: 'item_cat_name', sortable: true },
+  { label: 'หน่วยนับ', value: 'unit_id', field: 'unit_name', sortable: true },
+  { label: 'สินค้าทั้งหมด', value: 'item_total', field: 'item_total', sortable: true },
+  { label: 'สินค้าคงเหลือ', value: 'item_remain', field: 'item_remain', sortable: true },
+  { label: 'สถานะ', field: 'status', sortable: true }
 ]);
 
 const dataInventory = async () => {
@@ -209,13 +209,14 @@ const deleteItem = async (id: number,name: string) => {
   const item_id = id;
   try {
     const confirmResult = await Swal.fire({
-      title: 'Are you sure to delete?',
+      title: 'คุณแน่ใจใช่ไหมว่าจะลบ?',
       text: `${name}`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
       cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Yes, delete it!'
+      confirmButtonText: 'ลบ',
+      cancelButtonText: 'ยกเลิก'
     });
     if (confirmResult.isConfirmed) {
       await deleteInventory(id);

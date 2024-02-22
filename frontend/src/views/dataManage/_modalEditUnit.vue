@@ -7,7 +7,7 @@
     </template>
     <v-card>
       <v-card-title>
-        <span class="h3"><v-icon size="small" color="primary">mdi-pencil</v-icon> Edit Unit</span>
+        <span class="h3"><v-icon size="small" color="primary">mdi-pencil</v-icon> แก้ไขหน่วยนับ</span>
       </v-card-title>
       <v-card-text>
         <v-container>
@@ -17,7 +17,7 @@
               autofocus
                 v-model="unitName"
                 :counter="50"
-                label="Item category name*"
+                label="ชื่อหน่วยนับ*"
                 hint="Enter up to 50 characters"
                 :rules="[(v) => (!!v && v.length <= 50) || 'Please enter data']"
                 :error-messages="unitName.length > 50 ? ['****Maximum 50 characters****'] : []"

@@ -6,6 +6,10 @@
         <UiParentCard>
           <div class="flex mb-4">
             <h2 class="flex-grow">ข้อมูลเบิก/ยืมของ</h2>
+            <div class="search-container">
+              <input type="text" v-model="searchQuery" placeholder="Search..." class="search-input" />
+              <i class="mdi mdi-magnify search-icon"></i>
+            </div>
           </div>
           <div class="table-container">
             <table>
@@ -194,7 +198,10 @@ const searchQuery = ref('');
 
 const filteredData = computed(() => {
   return dataGridTransaction.dataList.filter((item) => {
-    return item.item_name.toLowerCase().includes(searchQuery.value.toLowerCase());
+    return (
+      item.full_name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+      item.item_name.toLowerCase().includes(searchQuery.value.toLowerCase())
+    );
   });
 });
 
@@ -238,7 +245,7 @@ const return_Item = (id: number, item_id: number, qty_: number) => {
           dataTransaction();
         });
       } else {
-        return
+        return;
       }
     })
     .catch((error) => {

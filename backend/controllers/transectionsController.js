@@ -71,4 +71,18 @@ module.exports = {
         res.status(500).send("Internal Server Error");
       });
   },
+
+  returnItemsAndUpdate: (req, res) => {
+    const transId = req.params.id;
+    const data = req.body;
+    transectionsModel
+      .returnItemsAndUpdate(transId, data)
+      .then((result) => {
+        res.status(200).send(result);
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send("Internal Server Error");
+      });
+  },
 };

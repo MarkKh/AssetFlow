@@ -45,7 +45,6 @@ module.exports = {
       });
   },
 
-
   getTransectionById: (transId) => {
     return pool
       .promise()
@@ -91,7 +90,7 @@ module.exports = {
       });
   },
 
-  createTransection : (newTransaction) => {
+  createTransection: (newTransaction) => {
     const {
       item_id,
       user_id,
@@ -113,21 +112,23 @@ module.exports = {
       .then((result) => {
         const insertedId = result.insertId;
         // Update item_remain in the items table
-        return pool.promise().query(
-          `UPDATE items 
+        return pool
+          .promise()
+          .query(
+            `UPDATE items 
           SET item_remain = item_remain - ? 
           WHERE item_id = ?`,
-          [qty, item_id]
-        ).then(() => {
-          return { trans_id: insertedId, ...newTransaction };
-        });
+            [qty, item_id]
+          )
+          .then(() => {
+            return { trans_id: insertedId, ...newTransaction };
+          });
       })
       .catch((error) => {
         console.error("Error creating transaction:", error);
         throw error;
       });
   },
-
 
   updateTransection: (transId, updatedTransection) => {
     const {
@@ -178,5 +179,31 @@ module.exports = {
         console.error("Error deleting transection:", error);
         throw error;
       });
+  },
+
+  returnItemsAndUpdate: async (transId, data) => {
+    const { qty, itemId } = data;
+    try {
+      // Update the status of the transaction
+      await pool.promise().query(
+        `UPDATE transections 
+         SET status_id = 1002 
+         WHERE trans_id = ?`,
+        [transId]
+      );
+
+      // Update the items table to increase the item_remain by qty
+      await pool.promise().query(
+        `UPDATE items 
+         SET item_remain = item_remain + ? 
+         WHERE item_id = ?`,
+        [qty, itemId]
+      );
+
+      return { message: "Items returned and tables updated successfully" };
+    } catch (error) {
+      console.error("Error returning items and updating tables:", error);
+      throw error;
+    }
   },
 };

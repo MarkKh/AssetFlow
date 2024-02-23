@@ -38,6 +38,26 @@
                         <v-chip size="small" text="คงเหลือ" color="success" variant="tonal" class="mr-2" />
                       </div>
                     </template>
+                    <template v-else-if="header.field === 'item_total'">
+                      <div v-if="item.item_remain > item.item_total">
+                        {{ item.item_total }} <br />
+                        <span style="font-size: 12px; color: red">กรุณาตรวจสอบความถูกต้อง </span>
+                        <v-icon color="error">mdi-alert-circle-outline</v-icon>
+                      </div>
+                      <div v-else>
+                        {{ item.item_total }}
+                      </div>
+                    </template>
+                    <template v-else-if="header.field === 'item_remain'">
+                      <div v-if="item.item_remain > item.item_total">
+                        {{ item.item_remain }} <br />
+                        <span style="font-size: 12px; color: red">กรุณาตรวจสอบความถูกต้อง </span>
+                        <v-icon color="error">mdi-alert-circle-outline</v-icon>
+                      </div>
+                      <div v-else>
+                        {{ item.item_remain }}
+                      </div>
+                    </template>
                     <template v-else>
                       {{ item[header.field] }}
                     </template>
@@ -47,7 +67,9 @@
                     <div class="flex">
                       <v-tooltip location="top">
                         <template v-slot:activator="{ props }">
-                          <ModalAddTransaction @click="addTransaction()" @addTrans="dataInventory()"
+                          <ModalAddTransaction
+                            @click="addTransaction()"
+                            @addTrans="dataInventory()"
                             :item_id="item.item_id"
                             :item_name="item.item_name"
                             :item_total="item.item_total"
@@ -60,11 +82,13 @@
 
                       <v-tooltip location="top">
                         <template v-slot:activator="{ props }">
-                          <ModalEditInventory @click="updateInventory" @editItem="handleUpdateIem()"
-                            :item_id="item.item_id" 
+                          <ModalEditInventory
+                            @click="updateInventory"
+                            @editItem="handleUpdateIem()"
+                            :item_id="item.item_id"
                             :item_name="item.item_name"
                             :item_total="item.item_total"
-                            :item_remain="item.item_remain" 
+                            :item_remain="item.item_remain"
                             :unit_name="item.unit_name"
                             :item_cat_name="item.item_cat_name"
                           />
@@ -114,8 +138,8 @@ import ModalEditInventory from './_modalEditInventory.vue';
 import ModalAddTransaction from './_modalAddTransaction.vue';
 
 const modalAddInventory = ref(false);
-const modalUpdate = ref(false)
-const modalAddTransaction =ref(false)
+const modalUpdate = ref(false);
+const modalAddTransaction = ref(false);
 
 const addInventory = () => {
   modalAddInventory.value = true;
@@ -127,8 +151,7 @@ const updateInventory = () => {
 
 const addTransaction = () => {
   modalAddTransaction.value = true;
-}
-
+};
 
 interface IData {
   item_id: number;
@@ -172,8 +195,8 @@ const handleAddItem = () => {
 };
 
 const handleUpdateIem = () => {
-  dataInventory()
-}
+  dataInventory();
+};
 
 const checkClick = (id: number) => {
   alert(id);
@@ -205,7 +228,7 @@ const currentIndex = computed(() => {
   return (currentPage.value - 1) * perPage.value;
 });
 
-const deleteItem = async (id: number,name: string) => {
+const deleteItem = async (id: number, name: string) => {
   const item_id = id;
   try {
     const confirmResult = await Swal.fire({

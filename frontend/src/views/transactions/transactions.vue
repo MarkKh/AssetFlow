@@ -12,8 +12,7 @@
               <thead>
                 <tr>
                   <th>#</th>
-                  <th v-for="(header, index) in headers" :key="index" class="header-cell"
-                    :style="{ width: header.width + '%' }">
+                  <th v-for="(header, index) in headers" :key="index" class="header-cell" :style="{ width: header.width + '%' }">
                     <span>{{ header.label }}</span>
                   </th>
                   <th>จัดการ</th>
@@ -28,8 +27,10 @@
                       {{ formatDate(item[header.field]) }}
                     </template>
                     <template v-else-if="header.field == 'end_date'">
-                      <div style="color: red"
-                        v-if="item.status_id == 1001 && isDateGreaterThanToday(item.end_date) && item.trans_cat_id == 1001">
+                      <div
+                        style="color: red"
+                        v-if="item.status_id == 1001 && isDateGreaterThanToday(item.end_date) && item.trans_cat_id == 1001"
+                      >
                         <!-- {{ formatDate(item[header.field]) }} <br /> -->
                         <div style="display: flex; justify-content: space-between; align-items: center">
                           <div>
@@ -66,19 +67,35 @@
                       {{ item.qty + ' ' + item.unit_name }}
                     </template>
                     <template v-else-if="header.field == 'trans_cat_name'">
-                      <v-chip v-if="item.trans_cat_id == 1001" size="small" :text="`${item.trans_cat_name}`"
-                        color="warning" variant="tonal" class="mr-2" />
-                      <v-chip v-else size="small" :text="`${item.trans_cat_name}`" color="info" variant="tonal"
-                        class="mr-2" />
+                      <v-chip
+                        v-if="item.trans_cat_id == 1001"
+                        size="small"
+                        :text="`${item.trans_cat_name}`"
+                        color="warning"
+                        variant="tonal"
+                        class="mr-2"
+                      />
+                      <v-chip v-else size="small" :text="`${item.trans_cat_name}`" color="info" variant="tonal" class="mr-2" />
                     </template>
                     <template v-else-if="header.field == 'status_name'">
                       <div v-if="item.trans_cat_id == 1001">
-                        <v-chip v-if="item.status_id == 1001" size="small" :text="`${item.status_name}`" color="success"
-                          variant="tonal" class="mr-2" />
-                        <v-chip v-else-if="item.status_id == 1002" size="small" :text="`${item.status_name}`"
-                          color="primary" variant="tonal" class="mr-2" />
-                        <v-chip v-else size="small" :text="`${item.status_name}`" color="dark" variant="tonal"
-                          class="mr-2" />
+                        <v-chip
+                          v-if="item.status_id == 1001"
+                          size="small"
+                          :text="`${item.status_name}`"
+                          color="success"
+                          variant="tonal"
+                          class="mr-2"
+                        />
+                        <v-chip
+                          v-else-if="item.status_id == 1002"
+                          size="small"
+                          :text="`${item.status_name}`"
+                          color="primary"
+                          variant="tonal"
+                          class="mr-2"
+                        />
+                        <v-chip v-else size="small" :text="`${item.status_name}`" color="dark" variant="tonal" class="mr-2" />
                       </div>
                     </template>
                     <template v-else>
@@ -89,8 +106,13 @@
                     <div v-if="item.trans_cat_id == 1001 && item.status_id == 1001">
                       <v-tooltip location="top">
                         <template v-slot:activator="{ props }">
-                          <v-btn icon v-bind="props" size="small"
-                            :disabled="item.status_id != 1001 || item.trans_cat_id != 1001">
+                          <v-btn
+                            @click="return_Item(item.trans_id, item.item_id, item.qty)"
+                            icon
+                            v-bind="props"
+                            size="small"
+                            :disabled="item.status_id != 1001 || item.trans_cat_id != 1001"
+                          >
                             <v-icon color="grey-lighten-1"> mdi-clipboard-arrow-down-outline </v-icon>
                           </v-btn>
                         </template>
@@ -117,7 +139,8 @@
 import { ref, reactive, computed, watchEffect, defineEmits, onMounted } from 'vue';
 import BaseBreadcrumb from '@/components/shared/BaseBreadcrumb.vue';
 import UiParentCard from '@/components/shared/UiParentCard.vue';
-import { getAllITransaction } from '@/service/transaction';
+import { getAllITransaction, returnItem } from '@/service/transaction';
+import Swal from 'sweetalert2';
 
 const page = ref({ title: 'Transaction' });
 
@@ -189,9 +212,40 @@ const currentIndex = computed(() => {
   return (currentPage.value - 1) * perPage.value;
 });
 
-const returnItem = () => {
+const return_Item = (id: number, item_id: number, qty_: number) => {
+  const data = {
+    qty: qty_,
+    itemId: item_id
+  };
 
-}
+  Swal.fire({
+    title: 'ยืนยันการคืนสินค้า',
+    text: 'คุณแน่ใจหรือไม่ที่ต้องการที่จะคืนสินค้านี้?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonText: 'ยืนยัน',
+    cancelButtonText: 'ยกเลิก'
+  })
+    .then((result) => {
+      if (result.isConfirmed) {
+        const res = returnItem(id, data);
+        Swal.fire({
+          title: 'คืนสินค้าเรียบร้อย',
+          icon: 'success',
+          timer: 1500,
+          showConfirmButton: false
+        }).then(() => {
+          dataTransaction();
+        });
+      } else {
+        return
+      }
+    })
+    .catch((error) => {
+      console.error('Error while showing swal:', error);
+      Swal.fire('ข้อผิดพลาด', 'มีข้อผิดพลาดเกิดขึ้น', 'error');
+    });
+};
 
 const formatDate = (dateString: string | null): string => {
   if (!dateString) return '-'; // กรณีไม่มีวันที่
@@ -283,7 +337,7 @@ tr:hover {
   justify-content: flex-end;
 }
 
-.pagination-container>* {
+.pagination-container > * {
   margin-left: 5px;
   font-size: 14px;
 }

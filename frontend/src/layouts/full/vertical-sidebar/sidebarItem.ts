@@ -8,7 +8,10 @@ import {
   BugIcon,
   DashboardIcon,
   BrandChromeIcon,
-  HelpIcon
+  HelpIcon,
+  BuildingWarehouseIcon,
+  DatabaseCogIcon,
+  ArrowAutofitContentIcon
 } from 'vue-tabler-icons';
 
 export interface menu {
@@ -38,17 +41,17 @@ const sidebarItem: menu[] = [
   { header: 'Management'},
   {
     title: 'Inventory items',
-    icon: DashboardIcon,
+    icon: BuildingWarehouseIcon,
     to: '/inventory'
   },
   {
     title: 'Manage data',
-    icon: DashboardIcon,
+    icon: DatabaseCogIcon,
     to: '/data-manage'
   },
   {
     title: 'Transactions',
-    icon: DashboardIcon,
+    icon: ArrowAutofitContentIcon,
     to: '/transaction'
   },
   // { header: 'Pages' },

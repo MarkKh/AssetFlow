@@ -111,7 +111,7 @@
                       <v-tooltip location="top">
                         <template v-slot:activator="{ props }">
                           <v-btn
-                            @click="return_Item(item.trans_id, item.item_id, item.qty)"
+                            @click="return_Item(item.trans_id, item.item_id, item.qty, item.item_name)"
                             icon
                             v-bind="props"
                             size="small"
@@ -219,7 +219,7 @@ const currentIndex = computed(() => {
   return (currentPage.value - 1) * perPage.value;
 });
 
-const return_Item = (id: number, item_id: number, qty_: number) => {
+const return_Item = (id: number, item_id: number, qty_: number, item_name: string) => {
   const data = {
     qty: qty_,
     itemId: item_id
@@ -227,7 +227,7 @@ const return_Item = (id: number, item_id: number, qty_: number) => {
 
   Swal.fire({
     title: 'ยืนยันการคืนสินค้า',
-    text: 'คุณแน่ใจหรือไม่ที่ต้องการที่จะคืนสินค้านี้?',
+    text: `คุณแน่ใจหรือไม่ที่ต้องการที่จะคืนสินค้านี้?`,
     icon: 'question',
     showCancelButton: true,
     confirmButtonText: 'ยืนยัน',

@@ -64,7 +64,7 @@ module.exports = {
 
     // สร้างอ็อบเจ็กต์เพื่อเก็บข้อมูลที่จะถูกอัพเดต
     const updatedAdmin = {
-        admin_name: admin_name
+      admin_name: admin_name,
     };
 
     admin
@@ -76,13 +76,24 @@ module.exports = {
         console.log(err);
         res.status(500).send("Internal Server Error");
       });
-},
-
+  },
 
   deleteAdmin: (req, res) => {
     const adminId = req.params.id;
     admin
       .deleteAdmin(adminId)
+      .then((result) => {
+        res.status(200).send(result);
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).send("Internal Server Error");
+      });
+  },
+  adminLogin: (req, res) => {
+    const { admin_user, admin_pass } = req.body;
+    admin
+      .loginAdmin({ admin_user, admin_pass }) 
       .then((result) => {
         res.status(200).send(result);
       })

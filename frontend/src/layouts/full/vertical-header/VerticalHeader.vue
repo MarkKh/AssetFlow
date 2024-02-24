@@ -42,7 +42,7 @@ function searchbox() {
     </v-btn>
 
     <!-- search mobile -->
-    <v-btn
+    <!-- <v-btn
       class="hidden-lg-and-up text-secondary ml-3"
       color="lightsecondary"
       icon
@@ -52,18 +52,9 @@ function searchbox() {
       @click="searchbox"
     >
       <SearchIcon size="17" stroke-width="1.5" />
-    </v-btn>
+    </v-btn> -->
 
-    <v-sheet v-if="showSearch" class="search-sheet v-col-12">
-      <Searchbar :closesearch="searchbox" />
-    </v-sheet>
-
-    <!-- ---------------------------------------------- -->
-    <!-- Search part -->
-    <!-- ---------------------------------------------- -->
-    <v-sheet class="mx-3 v-col-3 v-col-xl-2 v-col-lg-4 d-none d-lg-block">
-      <Searchbar />
-    </v-sheet>
+ 
 
     <!---/Search part -->
 

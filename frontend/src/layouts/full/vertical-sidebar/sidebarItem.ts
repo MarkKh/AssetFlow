@@ -31,14 +31,19 @@ export interface menu {
 }
 
 const sidebarItem: menu[] = [
-  { header: 'AssetFlow' },
-  {
-    title: 'Dashboard',
-    icon: DashboardIcon,
-    to: '/dashboard/default'
-  },
-  { divider: true },
+  // { header: 'AssetFlow' },
+  // {
+  //   title: 'Dashboard',
+  //   icon: DashboardIcon,
+  //   to: '/dashboard/default'
+  // },
+  // { divider: true },
   { header: 'Management'},
+  {
+    title: 'Transactions',
+    icon: ArrowAutofitContentIcon,
+    to: '/transaction'
+  },
   {
     title: 'Inventory items',
     icon: BuildingWarehouseIcon,
@@ -49,11 +54,7 @@ const sidebarItem: menu[] = [
     icon: DatabaseCogIcon,
     to: '/data-manage'
   },
-  {
-    title: 'Transactions',
-    icon: ArrowAutofitContentIcon,
-    to: '/transaction'
-  },
+
   // { header: 'Pages' },
   // {
   //   title: 'Authentication',

@@ -35,7 +35,7 @@ async function validate(values: any, { setErrors }: any) {
     <v-text-field
       v-model="username"
       :rules="emailRules"
-      label="Email Address / Username"
+      label="อีเมลผู้ใช้งาน"
       class="mt-4 mb-8"
       required
       density="comfortable"
@@ -46,7 +46,7 @@ async function validate(values: any, { setErrors }: any) {
     <v-text-field
       v-model="password"
       :rules="passwordRules"
-      label="Password"
+      label="รหัสผ่าน"
       required
       density="comfortable"
       variant="outlined"
@@ -71,7 +71,7 @@ async function validate(values: any, { setErrors }: any) {
 
     </div>
     <v-btn color="secondary" :loading="isSubmitting" block class="mt-2" variant="flat" size="large" :disabled="valid" type="submit">
-      Sign In</v-btn
+      อย่าเล่นกับระบบ</v-btn
     >
     <div v-if="errors.apiError" class="mt-2">
       <v-alert color="error">{{ errors.apiError }}</v-alert>

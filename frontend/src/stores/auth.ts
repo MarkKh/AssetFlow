@@ -18,9 +18,9 @@ export const useAuthStore = defineStore({
   actions: {
     async login(username: string, password: string) {
       try {
-        console.log(username, password, '-------------');
+        // console.log(username, password, '-------------');
         const response = await adminLogin(username, password);
-        console.log(response);
+        // console.log(response);
 
         if (response.token != null) {
           const token = response.token;
@@ -39,7 +39,7 @@ export const useAuthStore = defineStore({
             showConfirmButton: false
           }).then(() => {
             // Redirect to previous url or default to home page
-            router.push(this.returnUrl || '/dashboard/default');
+            router.push(this.returnUrl || '/transaction');
           });
         } else {
           Swal.fire({
@@ -50,7 +50,7 @@ export const useAuthStore = defineStore({
             showConfirmButton: false
           });
           // Handle case where token is null
-          console.error('Token is null. Login unsuccessful.');
+          // console.error('Token is null. Login unsuccessful.');
         }
       } catch (error) {
         console.error('Error while logging in:', error);

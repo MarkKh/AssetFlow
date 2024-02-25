@@ -9,7 +9,7 @@ const MainRoutes = {
     {
       name: 'LandingPage',
       path: '/',
-      component: () => import('@/views/dashboards/default/DefaultDashboard.vue')
+      component: () => import('@/views/transactions/transactions.vue')
     },
     {
       name: 'Default',

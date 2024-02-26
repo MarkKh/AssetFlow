@@ -9,7 +9,7 @@ const MainRoutes = {
     {
       name: 'LandingPage',
       path: '/',
-      component: () => import('@/views/dashboards/default/DefaultDashboard.vue')
+      component: () => import('@/views/transactions/transactions.vue')
     },
     {
       name: 'Default',
@@ -55,6 +55,11 @@ const MainRoutes = {
       name: 'DataManage',
       path: '/data-manage',
       component: () => import('@/views/dataManage/dataManage.vue')
+    },
+    {
+      name: 'Transaction',
+      path: '/transaction',
+      component: () => import('@/views/transactions/transactions.vue')
     },
   ]
 };

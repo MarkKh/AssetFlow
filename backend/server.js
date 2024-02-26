@@ -28,7 +28,6 @@ app.use(statusRouter)
 app.use(transectionCategoryRouter);
 app.use(itemRouter);
 app.use(transectionRouter);
-// app.use(authenticationRouter);
 
 const port = process.env.PORT;
 app

@@ -21,20 +21,21 @@ module.exports = {
             t.start_date,
             t.end_date,
             s.status_id,
-            s.status_name
+            s.status_name,
+            CONCAT(u.user_firstname, ' ', u.user_lastname) AS full_name
         FROM
             transections t
-        JOIN
+        LEFT JOIN
             items i ON t.item_id = i.item_id 
-        JOIN
+        LEFT JOIN
             users u ON t.user_id = u.user_id
-        JOIN
+        LEFT JOIN
             transection_category tc ON t.trans_cat_id = tc.trans_cat_id
-        JOIN
+        LEFT JOIN
             status s ON t.status_id = s.status_id
-        JOIN
+        LEFT JOIN
             units un ON i.item_unit = un.unit_id
-        JOIN
+        LEFT JOIN
             item_category ic ON i.item_id = ic.item_cat_id`
       )
       .then(([rows]) => rows)
@@ -66,17 +67,17 @@ module.exports = {
             s.status_name
         FROM
             transections t
-        JOIN
+        LEFT JOIN
             items i ON t.item_id = i.item_id 
-        JOIN
+        LEFT JOIN
             users u ON t.user_id = u.user_id
-        JOIN
+        LEFT JOIN
             transection_category tc ON t.trans_cat_id = tc.trans_cat_id
-        JOIN
+        LEFT JOIN
             status s ON t.status_id = s.status_id
-        JOIN
+        LEFT JOIN
             units un ON i.item_unit = un.unit_id
-        JOIN
+        LEFT JOIN
             item_category ic ON i.item_id = ic.item_cat_id
         WHERE 
             t.trans_id = ?`,
@@ -89,7 +90,7 @@ module.exports = {
       });
   },
 
-  createTransection: (newTransection) => {
+  createTransection: (newTransaction) => {
     const {
       item_id,
       user_id,
@@ -98,7 +99,7 @@ module.exports = {
       start_date,
       end_date,
       status_id,
-    } = newTransection;
+    } = newTransaction;
 
     return pool
       .promise()
@@ -109,10 +110,22 @@ module.exports = {
         [item_id, user_id, qty, trans_cat_id, start_date, end_date, status_id]
       )
       .then((result) => {
-        return { trans_id: result.insertId, ...newTransection };
+        const insertedId = result.insertId;
+        // Update item_remain in the items table
+        return pool
+          .promise()
+          .query(
+            `UPDATE items 
+          SET item_remain = item_remain - ? 
+          WHERE item_id = ?`,
+            [qty, item_id]
+          )
+          .then(() => {
+            return { trans_id: insertedId, ...newTransaction };
+          });
       })
       .catch((error) => {
-        console.error("Error creating transection:", error);
+        console.error("Error creating transaction:", error);
         throw error;
       });
   },
@@ -166,5 +179,31 @@ module.exports = {
         console.error("Error deleting transection:", error);
         throw error;
       });
+  },
+
+  returnItemsAndUpdate: async (transId, data) => {
+    const { qty, itemId } = data;
+    try {
+      // Update the status of the transaction
+      await pool.promise().query(
+        `UPDATE transections 
+         SET status_id = 1002 
+         WHERE trans_id = ?`,
+        [transId]
+      );
+
+      // Update the items table to increase the item_remain by qty
+      await pool.promise().query(
+        `UPDATE items 
+         SET item_remain = item_remain + ? 
+         WHERE item_id = ?`,
+        [qty, itemId]
+      );
+
+      return { message: "Items returned and tables updated successfully" };
+    } catch (error) {
+      console.error("Error returning items and updating tables:", error);
+      throw error;
+    }
   },
 };

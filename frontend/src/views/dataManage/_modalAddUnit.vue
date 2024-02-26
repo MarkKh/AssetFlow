@@ -7,7 +7,7 @@
     </template>
     <v-card>
       <v-card-title>
-        <span class="h3"><v-icon size="small" color="primary">mdi-plus</v-icon> Add New unit</span>
+        <span class="h3"><v-icon size="small" color="primary">mdi-plus</v-icon> เพิ่มหน่วยนับ</span>
       </v-card-title>
       <v-card-text>
         <v-container>
@@ -17,7 +17,7 @@
                 autofocus
                 v-model="formData.unitName"
                 :counter="50"
-                label="Unit name*"
+                label="ชื่อหน่วยนับ*"
                 hint="Enter up to 50 characters"
                 :rules="[(v) => (!!v && v.length <= 50) || 'Please enter data']"
                 :error-messages="formData.unitName.length > 50 ? ['****Maximum 50 characters****'] : []"
@@ -36,7 +36,7 @@
 
     <v-dialog v-model="validationDialog" max-width="300">
       <v-card>
-        <v-card-text><span style="color: red">Please fill in all required fields.</span></v-card-text>
+        <v-card-text><span style="color: red">กรุณากรอกข้อมูลให้ครบถ้วน</span></v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="blue darken-1" text @click="validationDialog = false">OK</v-btn>

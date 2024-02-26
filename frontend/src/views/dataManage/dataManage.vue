@@ -5,7 +5,7 @@
       <v-col cols="12" md="12">
         <UiParentCard>
           <div class="flex mb-4">
-            <h2 class="flex-grow">Item Category Management</h2>
+            <h2 class="flex-grow">การจัดการหมวดหมู่รายการ</h2>
             <div class="search-container">
               <input type="text" v-model="ICsearchQuery" placeholder="Search..." class="search-input" />
               <i class="mdi mdi-magnify search-icon"></i>
@@ -50,7 +50,7 @@
                             :item_cat_name="item.item_cat_name"
                           />
                         </template>
-                      </v-tooltip>
+                      </v-tooltip>&nbsp
                       <v-tooltip location="top">
                         <template v-slot:activator="{ props }">
                           <v-btn
@@ -83,7 +83,7 @@
 
         <UiParentCard class="mt-6">
           <div class="flex mb-4">
-            <h2 class="flex-grow">Unit Management</h2>
+            <h2 class="flex-grow">การจัดการหน่วยนับ</h2>
             <div class="search-container">
               <input type="text" v-model="UNsearchQuery" placeholder="Search..." class="search-input" />
               <i class="mdi mdi-magnify search-icon"></i>
@@ -98,7 +98,7 @@
                   <th v-for="(header, index) in unitHeaders" :key="index" class="header-cell" :style="{ width: header.width + '%' }">
                     <span>{{ header.label }}</span>
                   </th>
-                  <th style="width: 20%">Actions</th>
+                  <th style="width: 20%">จัดการ</th>
                 </tr>
               </thead>
               <tbody>
@@ -156,12 +156,12 @@
 
         <UiParentCard class="mt-6">
           <div class="flex mb-4">
-            <h2 class="flex-grow">Transaction Category Management</h2>
+            <h2 class="flex-grow">การจัดการหมวดหมู่ธุรกรรม</h2>
             <div class="search-container">
               <input type="text" v-model="TCsearchQuery" placeholder="Search..." class="search-input" />
               <i class="mdi mdi-magnify search-icon"></i>
             </div>
-            <ModalAddTransactionCategory @click="addTC" @addTC="handleAddTC" />
+            <!-- <ModalAddTransactionCategory @click="addTC" @addTC="handleAddTC" /> -->
           </div>
           <div class="table-container">
             <table>
@@ -171,7 +171,7 @@
                   <th v-for="(header, index) in TCHeaders" :key="index" class="header-cell" :style="{ width: header.width + '%' }">
                     <span>{{ header.label }}</span>
                   </th>
-                  <th style="width: 20%">Actions</th>
+                  <!-- <th style="width: 20%">Actions</th> -->
                 </tr>
               </thead>
               <tbody>
@@ -190,7 +190,7 @@
                       {{ item[header.field] }}
                     </template>
                   </td>
-                  <td>
+                  <!-- <td>
                     <v-tooltip location="top">
                       <template v-slot:activator="{ props }">
                         <ModalUpdateTC
@@ -216,7 +216,7 @@
                       </template>
                       <span>Delete</span>
                     </v-tooltip>
-                  </td>
+                  </td> -->
                 </tr>
               </tbody>
             </table>
@@ -271,10 +271,10 @@ const dataGridItemCategory = reactive({
 });
 
 const itemCategoryHeaders = reactive([
-  { label: 'Item Category ID', value: 'item_cat_id', field: 'item_cat_id', width: '20' },
-  { label: 'Item Category Name', value: 'item_cat_name', field: 'item_cat_name', width: '30' },
-  { label: 'Active', value: 'isReferenced', field: 'isReferenced', width: '20' },
-  { label: 'Action', field: 'Action', width: '20' }
+  { label: 'รหัสประเภทสินค้า', value: 'item_cat_id', field: 'item_cat_id', width: '20' },
+  { label: 'ชื่อประเภทสินค้า', value: 'item_cat_name', field: 'item_cat_name', width: '30' },
+  { label: 'การใช้งาน', value: 'isReferenced', field: 'isReferenced', width: '20' },
+  { label: 'จัดการ', field: 'Action', width: '20' }
 ]);
 
 const dataItemCategory = async () => {
@@ -329,13 +329,14 @@ const deleteIC = async (id: number, name: string) => {
   const item_id = id;
   try {
     const confirmResult = await Swal.fire({
-      title: 'Are you sure to delete?',
+      title: 'คุณแน่ใจใช่ไหมว่าจะลบ?',
       text: `${name}`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
       cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Yes, delete it!'
+      confirmButtonText: 'ลบ', 
+      cancelButtonText: 'ยกเลิก'
     });
     if (confirmResult.isConfirmed) {
       await deleteItemCategory(id);
@@ -372,9 +373,9 @@ const dataGridUnit = reactive({
 });
 
 const unitHeaders = reactive([
-  { label: 'Unit ID', value: 'unit_id', field: 'unit_id', width: '20' },
-  { label: 'Unit Name', value: 'unit_name', field: 'unit_name', width: '30' },
-  { label: 'Active', value: 'isReferenced', field: 'isReferenced', width: '20' }
+  { label: 'รหัสหน่วยนับ', value: 'unit_id', field: 'unit_id', width: '20' },
+  { label: 'ชื่อหน่วยนับ', value: 'unit_name', field: 'unit_name', width: '30' },
+  { label: 'การใช้งาน', value: 'isReferenced', field: 'isReferenced', width: '20' }
 ]);
 
 const dataUnit = async () => {
@@ -429,13 +430,14 @@ const delete_Unit = async (id: number, name: string) => {
   const item_id = id;
   try {
     const confirmResult = await Swal.fire({
-      title: 'Are you sure to delete?',
+      title: 'คุณแน่ใจใช่ไหมว่าจะลบ?',
       text: `${name}`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
       cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Yes, delete it!'
+      confirmButtonText: 'ลบ',
+      cancelButtonText: 'ยกเลิก'
     });
     if (confirmResult.isConfirmed) {
       await deleteUnit(id);
@@ -472,9 +474,9 @@ const dataGridTC = reactive({
 });
 
 const TCHeaders = reactive([
-  { label: 'Trans Category ID', value: 'trans_cat_id', field: 'trans_cat_id', width: '20' },
-  { label: 'Trans Category Name', value: 'trans_cat_name', field: 'trans_cat_name', width: '30' },
-  { label: 'Active', value: 'isReferenced', field: 'isReferenced', width: '20' }
+  { label: 'รหัสธุรกรรม', value: 'trans_cat_id', field: 'trans_cat_id', width: '20' },
+  { label: 'ชื่อธุรกรรม', value: 'trans_cat_name', field: 'trans_cat_name', width: '30' },
+  { label: 'การใช้งาน', value: 'isReferenced', field: 'isReferenced', width: '20' }
 ]);
 
 const dataTC = async () => {
@@ -529,13 +531,14 @@ const deleteTC = async (id: number, name: string) => {
   const item_id = id;
   try {
     const confirmResult = await Swal.fire({
-      title: 'Are you sure to delete?',
+      title: 'คุณแน่ใจใช่ไหมว่าจะลบ?',
       text: `${name}`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
       cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Yes, delete it!'
+      confirmButtonText: 'ลบ',
+      cancelButtonText: 'ยกเลิก'
     });
     if (confirmResult.isConfirmed) {
       await deleteTransactionCategory(id);

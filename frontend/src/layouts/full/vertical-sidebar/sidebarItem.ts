@@ -8,7 +8,10 @@ import {
   BugIcon,
   DashboardIcon,
   BrandChromeIcon,
-  HelpIcon
+  HelpIcon,
+  BuildingWarehouseIcon,
+  DatabaseCogIcon,
+  ArrowAutofitContentIcon
 } from 'vue-tabler-icons';
 
 export interface menu {
@@ -28,29 +31,30 @@ export interface menu {
 }
 
 const sidebarItem: menu[] = [
-  { header: 'AssetFlow' },
-  {
-    title: 'Dashboard',
-    icon: DashboardIcon,
-    to: '/dashboard/default'
-  },
-  { divider: true },
+  // { header: 'AssetFlow' },
+  // {
+  //   title: 'Dashboard',
+  //   icon: DashboardIcon,
+  //   to: '/dashboard/default'
+  // },
+  // { divider: true },
   { header: 'Management'},
   {
+    title: 'Transactions',
+    icon: ArrowAutofitContentIcon,
+    to: '/transaction'
+  },
+  {
     title: 'Inventory items',
-    icon: DashboardIcon,
+    icon: BuildingWarehouseIcon,
     to: '/inventory'
   },
   {
     title: 'Manage data',
-    icon: DashboardIcon,
+    icon: DatabaseCogIcon,
     to: '/data-manage'
   },
-  {
-    title: 'Transactions',
-    icon: DashboardIcon,
-    // to: '/dashboard/default'
-  },
+
   // { header: 'Pages' },
   // {
   //   title: 'Authentication',

@@ -1,4 +1,3 @@
-v-container
 <template>
   <div>
     <BaseBreadcrumb :title="page.title" :breadcrumbs="breadcrumbs"></BaseBreadcrumb>
@@ -6,7 +5,7 @@ v-container
       <v-col cols="12" md="12">
         <UiParentCard>
           <div class="flex mb-4">
-            <h2 class="flex-grow">Inventory items</h2>
+            <h2 class="flex-grow">สินค้าในคลัง</h2>
             <div class="search-container">
               <input type="text" v-model="searchQuery" placeholder="Search..." class="search-input" />
               <i class="mdi mdi-magnify search-icon"></i>
@@ -21,7 +20,7 @@ v-container
                   <th v-for="(header, index) in headers" :key="index" class="header-cell">
                     <span>{{ header.label }}</span>
                   </th>
-                  <th>Actions</th>
+                  <th>จัดการ</th>
                 </tr>
               </thead>
               <tbody>
@@ -39,6 +38,26 @@ v-container
                         <v-chip size="small" text="คงเหลือ" color="success" variant="tonal" class="mr-2" />
                       </div>
                     </template>
+                    <template v-else-if="header.field === 'item_total'">
+                      <div v-if="item.item_remain > item.item_total">
+                        {{ item.item_total }} <br />
+                        <span style="font-size: 12px; color: red">กรุณาตรวจสอบความถูกต้อง </span>
+                        <v-icon color="error">mdi-alert-circle-outline</v-icon>
+                      </div>
+                      <div v-else>
+                        {{ item.item_total }}
+                      </div>
+                    </template>
+                    <template v-else-if="header.field === 'item_remain'">
+                      <div v-if="item.item_remain > item.item_total">
+                        {{ item.item_remain }} <br />
+                        <span style="font-size: 12px; color: red">กรุณาตรวจสอบความถูกต้อง </span>
+                        <v-icon color="error">mdi-alert-circle-outline</v-icon>
+                      </div>
+                      <div v-else>
+                        {{ item.item_remain }}
+                      </div>
+                    </template>
                     <template v-else>
                       {{ item[header.field] }}
                     </template>
@@ -48,18 +67,31 @@ v-container
                     <div class="flex">
                       <v-tooltip location="top">
                         <template v-slot:activator="{ props }">
-                          <v-btn icon v-bind="props" size="small" @click="checkClick(item.item_id)" :disabled="!item.status">
-                            <v-icon color="grey-lighten-1"> mdi-book-arrow-down-outline </v-icon>
-                          </v-btn>
+                          <ModalAddTransaction
+                            @click="addTransaction()"
+                            @addTrans="dataInventory()"
+                            :item_id="item.item_id"
+                            :item_name="item.item_name"
+                            :item_total="item.item_total"
+                            :item_remain="item.item_remain"
+                            :isDisable="item.item_remain == 0"
+                          />
                         </template>
                         <span>Withdraw/Borrow</span> </v-tooltip
                       >&nbsp
 
                       <v-tooltip location="top">
                         <template v-slot:activator="{ props }">
-                          <v-btn icon v-bind="props" size="small">
-                            <v-icon color="grey-lighten-1"> mdi-pencil </v-icon>
-                          </v-btn>
+                          <ModalEditInventory
+                            @click="updateInventory"
+                            @editItem="handleUpdateIem()"
+                            :item_id="item.item_id"
+                            :item_name="item.item_name"
+                            :item_total="item.item_total"
+                            :item_remain="item.item_remain"
+                            :unit_name="item.unit_name"
+                            :item_cat_name="item.item_cat_name"
+                          />
                         </template>
                         <span>Edit</span> </v-tooltip
                       >&nbsp
@@ -102,11 +134,23 @@ import UiParentCard from '@/components/shared/UiParentCard.vue';
 import { getAllInventory, deleteInventory } from '@/service/inventory';
 import ModalAddInventory from './_modalAddInventory.vue';
 import Swal from 'sweetalert2';
+import ModalEditInventory from './_modalEditInventory.vue';
+import ModalAddTransaction from './_modalAddTransaction.vue';
 
 const modalAddInventory = ref(false);
+const modalUpdate = ref(false);
+const modalAddTransaction = ref(false);
 
 const addInventory = () => {
   modalAddInventory.value = true;
+};
+
+const updateInventory = () => {
+  modalUpdate.value = true;
+};
+
+const addTransaction = () => {
+  modalAddTransaction.value = true;
 };
 
 interface IData {
@@ -133,12 +177,12 @@ const breadcrumbs = ref([
 ]);
 
 const headers = reactive([
-  { label: 'Name', value: 'item_id', field: 'item_name', sortable: true },
-  { label: 'Product type', value: 'item_cat_id', field: 'item_cat_name', sortable: true },
-  { label: 'Unit', value: 'unit_id', field: 'unit_name', sortable: true },
-  { label: 'All Stock', value: 'item_total', field: 'item_total', sortable: true },
-  { label: 'Remain Stock', value: 'item_remain', field: 'item_remain', sortable: true },
-  { label: 'Status', field: 'status', sortable: true }
+  { label: 'ชื่อสินค้า', value: 'item_id', field: 'item_name', sortable: true },
+  { label: 'ประเภทสินค้า', value: 'item_cat_id', field: 'item_cat_name', sortable: true },
+  { label: 'หน่วยนับ', value: 'unit_id', field: 'unit_name', sortable: true },
+  { label: 'สินค้าทั้งหมด', value: 'item_total', field: 'item_total', sortable: true },
+  { label: 'สินค้าคงเหลือ', value: 'item_remain', field: 'item_remain', sortable: true },
+  { label: 'สถานะ', field: 'status', sortable: true }
 ]);
 
 const dataInventory = async () => {
@@ -147,6 +191,10 @@ const dataInventory = async () => {
 };
 
 const handleAddItem = () => {
+  dataInventory();
+};
+
+const handleUpdateIem = () => {
   dataInventory();
 };
 
@@ -180,22 +228,18 @@ const currentIndex = computed(() => {
   return (currentPage.value - 1) * perPage.value;
 });
 
-
-const editItem = (id: number) => {
-  alert('Success');
-};
-
-const deleteItem = async (id: number,name: string) => {
+const deleteItem = async (id: number, name: string) => {
   const item_id = id;
   try {
     const confirmResult = await Swal.fire({
-      title: 'Are you sure to delete?',
+      title: 'คุณแน่ใจใช่ไหมว่าจะลบ?',
       text: `${name}`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#d33',
       cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Yes, delete it!'
+      confirmButtonText: 'ลบ',
+      cancelButtonText: 'ยกเลิก'
     });
     if (confirmResult.isConfirmed) {
       await deleteInventory(id);

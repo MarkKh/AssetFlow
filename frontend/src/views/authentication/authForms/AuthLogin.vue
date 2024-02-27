@@ -71,7 +71,7 @@ async function validate(values: any, { setErrors }: any) {
 
     </div>
     <v-btn color="secondary" :loading="isSubmitting" block class="mt-2" variant="flat" size="large" :disabled="valid" type="submit">
-      อย่าเล่นกับระบบ</v-btn
+      เข้าสู่ระบบ</v-btn
     >
     <div v-if="errors.apiError" class="mt-2">
       <v-alert color="error">{{ errors.apiError }}</v-alert>
